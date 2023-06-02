@@ -33,7 +33,7 @@ export const authOptions: AuthOptions = NextAuth({
         });
         // if couldn't find user or password not exists
         if (!user || !user?.hashedPassword)
-          throw new Error("Invalid Credentials");
+          throw new Error("User Not Found");
         // compare entered password with hashed password stored in the db
         const isPasswordCorrect = await bcrypt.compare(
           credentials.password,
