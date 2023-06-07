@@ -1,12 +1,12 @@
 "use client";
 
 import { Link } from "@chakra-ui/next-js";
-import { Button } from "@/components/ChakraUIComponents";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { FC } from "react";
 import { MdComputer } from "react-icons/md";
 import {
   Avatar,
+  Button,
   Flex,
   Menu,
   MenuButton,

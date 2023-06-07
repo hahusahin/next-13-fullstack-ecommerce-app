@@ -28,7 +28,7 @@ export default async function RootLayout({
               <ToasterProvider />
             </ClientOnly>
             <main className="flex flex-col justify-between h-screen">
-              <div>
+              <div className="container">
                 <Header />
                 {children}
               </div>
