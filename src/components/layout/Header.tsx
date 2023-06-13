@@ -1,18 +1,10 @@
 "use client";
 
-import { Link } from "@chakra-ui/next-js";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { FC } from "react";
 import { MdComputer } from "react-icons/md";
-import {
-  Avatar,
-  Button,
-  Flex,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-} from "@chakra-ui/react";
+import Link from "next/link";
+import Image from "next/image";
 
 const Header: FC = () => {
   const { data: session } = useSession();
@@ -25,42 +17,63 @@ const Header: FC = () => {
         <MdComputer size="32px" />
         <span className="text-lg">Products</span>
       </Link>
-      <Flex alignItems="center">
-        <Button as={Link} href="/" variant="ghost" fontWeight="medium">
+      <div className="flex items-center gap-6">
+        <Link
+          href="/"
+          className="btn btn-ghost hover:bg-transparent normal-case text-base"
+        >
           Home
-        </Button>
+        </Link>
         {!user && (
-          <Button variant="ghost" fontWeight="medium" onClick={() => signIn()}>
+          <button
+            className="btn btn-ghost hover:bg-transparent normal-case text-base"
+            onClick={() => signIn()}
+          >
             Login
-          </Button>
+          </button>
         )}
-        <Button as={Link} href="/cart" variant="ghost" fontWeight="medium">
+        <Link
+          href="/cart"
+          className="btn btn-ghost hover:bg-transparent normal-case text-base"
+        >
           Cart
-        </Button>
+        </Link>
         {user && (
-          <Menu>
-            <Avatar
-              as={MenuButton}
-              size="sm"
-              name={user.name as string}
-              src={user.image ? user.image : undefined}
-              overflow="hidden"
-            />
-            <MenuList>
-              <MenuItem as={Button} fontWeight="medium">
-                <Link href="/profile">My Account</Link>
-              </MenuItem>
-              <MenuItem
-                as={Button}
-                fontWeight="medium"
-                onClick={() => signOut({ callbackUrl: "/" })}
-              >
-                Signout
-              </MenuItem>
-            </MenuList>
-          </Menu>
+          <div className="dropdown dropdown-end">
+            <label tabIndex={0} className="avatar cursor-pointer">
+              <div className="w-9">
+                <Image
+                  fill
+                  src={user.image || "/images/avatar.png"}
+                  alt="avatar"
+                  className="rounded-full"
+                />
+              </div>
+            </label>
+            <ul
+              tabIndex={0}
+              className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52"
+            >
+              <li>
+                <Link
+                  href="/profile"
+                  className="btn btn-ghost normal-case text-base"
+                >
+                  My Account
+                </Link>
+              </li>
+              <li>
+                <button
+                  className="btn btn-ghost normal-case text-base"
+                  onClick={() => signOut({ callbackUrl: "/" })}
+                >
+                  Signout
+                </button>
+              </li>
+            </ul>
+          </div>
         )}
-      </Flex>
+      </div>
     </div>
   );
 };

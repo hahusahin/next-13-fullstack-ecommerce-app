@@ -7,7 +7,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import Spinner from "@/components/Spinner";
 import { useState } from "react";
-import { useToast } from "@chakra-ui/react";
+import { toast } from "react-hot-toast";
 
 const registerSchema = yup
   .object({
@@ -28,7 +28,6 @@ type FormData = yup.InferType<typeof registerSchema>;
 const Register = () => {
   const [isLoading, setIsLoading] = useState(false);
 
-  const toast = useToast();
   const router = useRouter();
   const {
     register,
@@ -43,19 +42,11 @@ const Register = () => {
     axios
       .post("/api/register", data)
       .then(() => {
-        toast({
-          title: "Account created.",
-          description: "Registered Successfully!",
-          status: "success",
-        });
-        router.push("/");
+        toast.success("Registered Successfully!");
+        router.push("/login");
       })
       .catch((error) => {
-        toast({
-          title: "Error",
-          description: error,
-          status: "error",
-        });
+        toast.error(error);
       })
       .finally(() => {
         setIsLoading(false);

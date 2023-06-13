@@ -5,22 +5,11 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Center, Spinner } from "@chakra-ui/react";
 import { useState } from "react";
-import {
-  Button,
-  Container,
-  Divider,
-  Flex,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
-  Input,
-  Text,
-  useToast,
-} from "@chakra-ui/react";
 import Link from "next/link";
 import { FcGoogle } from "react-icons/fc";
+import Spinner from "@/components/Spinner";
+import { toast } from "react-hot-toast";
 
 const loginSchema = yup
   .object({
@@ -36,7 +25,6 @@ type FormData = yup.InferType<typeof loginSchema>;
 
 const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const toast = useToast();
   const router = useRouter();
 
   const {
@@ -55,90 +43,76 @@ const Login = () => {
     }).then((callback) => {
       setIsLoading(false);
       if (callback?.ok && !callback?.error) {
-        toast({
-          title: "Login",
-          description: "Logged In Successfully!",
-          status: "success",
-        });
-        router.push("/");
+        toast.success("Logged In Successfully!");
+        router.back();
         router.refresh();
       }
 
       if (callback?.error) {
-        toast({
-          title: "Error",
-          description: callback?.error,
-          status: "error",
-        });
+        toast.error(callback?.error);
       }
     });
   };
 
-  if (isLoading)
-    return (
-      <Center w="full" h="full">
-        <Spinner />
-      </Center>
-    );
+  if (isLoading) return <Spinner />;
 
   return (
-    <Container as="form" onSubmit={handleSubmit(onSubmit)} mt="16">
-      <Flex
-        flexDirection="column"
-        gap={4}
-        alignItems="center"
-        mx="auto"
-        maxW="20rem"
-        padding={8}
-        border="1px"
-        borderRadius={12}
-        borderColor="blue.200"
-      >
-        <Text fontSize="2xl" fontWeight="bold">
-          Login
-        </Text>
-        <FormControl isInvalid={!!errors.email}>
-          <FormLabel>Your Email</FormLabel>
-          <Input borderColor="blue.200" type="email" {...register("email")} />
-          <FormErrorMessage>{errors.email?.message}</FormErrorMessage>
-        </FormControl>
-        <FormControl isInvalid={!!errors.password}>
-          <FormLabel>Your Password</FormLabel>
-          <Input
-            borderColor="blue.200"
+    <form onSubmit={handleSubmit(onSubmit)} className="container my-8">
+      <div className="flex flex-col gap-4 items-center mx-auto max-w-[25rem] p-8 border-2 border-blue-300 rounded-xl">
+        <p className="text-2xl font-bold">Login</p>
+        <div className="form-control w-full">
+          <label className="label">
+            <span className="text-base font-medium label-text">Your Email</span>
+          </label>
+          <input
+            className="input input-bordered border-blue-200 w-full"
+            type="email"
+            {...register("email")}
+          />
+          {errors.email && (
+            <label className="label label-text text-red-400">
+              {errors.email.message}
+            </label>
+          )}
+        </div>
+        <div className="form-control w-full">
+          <label className="label">
+            <span className="text-base font-medium label-text">
+              Your Password
+            </span>
+          </label>
+          <input
+            className="input input-bordered border-blue-200 w-full"
             type="password"
             {...register("password")}
           />
-          <FormErrorMessage>{errors.password?.message}</FormErrorMessage>
-        </FormControl>
-        <Button
-          colorScheme="messenger"
-          variant="outline"
-          type="submit"
-          isLoading={isLoading}
-        >
+          {errors.password && (
+            <label className="label label-text text-red-400">
+              {errors.password.message}
+            </label>
+          )}
+        </div>
+        <button className="btn btn-info mt-2 max-w-max" type="submit">
+          {isLoading && <span className="loading loading-spinner"></span>}
           Login
-        </Button>
-        <Divider />
-        <Button
-          w="full"
-          variant="outline"
-          leftIcon={<FcGoogle />}
+        </button>
+        <div className="divider my-0" />
+
+        <button
+          className="btn btn-outline w-full"
           onClick={() => signIn("google", { callbackUrl: "/" })}
         >
+          <FcGoogle className="mr-2" />
           Continue With Google
-        </Button>
-        <Button
-          mt={4}
-          as={Link}
-          color="gray.600"
-          variant="link"
+        </button>
+        <Link
           href="/register"
+          className="link link-hover text-gray-700 font-medium mt-4"
         >
           Create New Account
-        </Button>
-      </Flex>
-    </Container>
+        </Link>
+      </div>
+    </form>
   );
 };
 

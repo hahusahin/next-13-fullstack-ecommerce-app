@@ -13,7 +13,11 @@ async function getProductById(params: IParams) {
         id: productId,
       },
       include: {
-        reviews: true,
+        reviews: {
+          include: {
+            user: true,
+          },
+        },
       },
     });
 
@@ -24,6 +28,14 @@ async function getProductById(params: IParams) {
     throw new Error(err);
   }
 }
+
+export const generateMetadata = async ({ params }: { params: IParams }) => {
+  const product = await getProductById(params);
+
+  if (!product) return null;
+
+  return { title: product.name, description: product.description };
+};
 
 const ProductPage = async ({ params }: { params: IParams }) => {
   const product = await getProductById(params);

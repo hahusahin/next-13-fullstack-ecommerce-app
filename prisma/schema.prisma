@@ -83,7 +83,7 @@ model Order {
 
 model Review {
   id        String  @id @default(auto()) @map("_id") @db.ObjectId
-  rating    Int
+  rating    Float
   review    String?
   productId String  @db.ObjectId
   userId    String  @db.ObjectId

@@ -4,7 +4,6 @@ import { Rubik } from "next/font/google";
 import "./globals.css";
 import ClientOnly from "@/components/ClientOnly";
 import ToasterProvider from "@/providers/ToasterProvider";
-import ChakraProviders from "@/providers/ChakraProviders";
 import NextAuthSessionProvider from "@/providers/SessionProvider";
 
 const rubik = Rubik({ subsets: ["latin"] });
@@ -22,20 +21,16 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={`${rubik.className} bg-slate-100`}>
-        <ChakraProviders>
-          <NextAuthSessionProvider>
-            <ClientOnly>
-              <ToasterProvider />
-            </ClientOnly>
-            <main className="flex flex-col justify-between h-screen">
-              <div className="container">
-                <Header />
-                {children}
-              </div>
-              <Footer />
-            </main>
-          </NextAuthSessionProvider>
-        </ChakraProviders>
+        <NextAuthSessionProvider>
+          <ClientOnly>
+            <ToasterProvider />
+          </ClientOnly>
+          <main className="container flex flex-col justify-between items-center min-h-screen overflow-y-auto">
+            <Header />
+            {children}
+            <Footer />
+          </main>
+        </NextAuthSessionProvider>
       </body>
     </html>
   );
