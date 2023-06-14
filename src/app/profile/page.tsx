@@ -10,7 +10,7 @@ const Profile = () => {
   if (!user) return null;
 
   return (
-    <div className="overflow-x-auto">
+    <div>
       <p className="text-2xl font-bold text-center mb-4">Your Profile</p>
       <table className="table text-xl">
         <tbody>

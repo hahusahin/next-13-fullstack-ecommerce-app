@@ -2,12 +2,15 @@
 
 import { signIn, signOut, useSession } from "next-auth/react";
 import { FC } from "react";
-import { MdComputer } from "react-icons/md";
 import Link from "next/link";
 import Image from "next/image";
+import { useAppSelector } from "@/store";
+import { MdComputer } from "react-icons/md";
+import { TiShoppingCart } from "react-icons/ti";
 
 const Header: FC = () => {
   const { data: session } = useSession();
+  const cartQuantity = useAppSelector((state) => state.cart.cartQuantity);
 
   const user = session && session.user;
 
@@ -36,7 +39,13 @@ const Header: FC = () => {
           href="/cart"
           className="btn btn-ghost hover:bg-transparent normal-case text-base"
         >
-          Cart
+          <TiShoppingCart size="1.25rem" />
+          <span className="mx-2">Cart</span>
+          {cartQuantity > 0 && (
+            <span className="badge badge-warning badge-md rounded-full">
+              {cartQuantity}
+            </span>
+          )}
         </Link>
         {user && (
           <div className="dropdown dropdown-end">
