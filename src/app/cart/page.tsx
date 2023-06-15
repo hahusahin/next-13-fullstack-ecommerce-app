@@ -2,10 +2,13 @@
 
 import CartItem from "@/components/cart/CartItem";
 import { useAppSelector } from "@/store";
+import { useRouter } from "next/navigation";
 
 const Cart = () => {
   const cartItems = useAppSelector((state) => state.cart.items);
   const totalPrice = cartItems.reduce((acc, curr) => acc + curr.totalPrice, 0);
+
+  const router = useRouter();
 
   return (
     <>
@@ -18,6 +21,12 @@ const Cart = () => {
           <p className="text-xl text-center md:text-end my-4 me-6">
             Total Price: {`$ ${totalPrice.toFixed(2)}`}
           </p>
+          <button
+            className="btn btn-success mt-6"
+            onClick={() => router.push("/order")}
+          >
+            Proceed To Checkout
+          </button>
         </div>
       ) : (
         <p className="container text-center text-2xl">

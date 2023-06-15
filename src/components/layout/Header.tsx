@@ -7,12 +7,13 @@ import Image from "next/image";
 import { useAppSelector } from "@/store";
 import { MdComputer } from "react-icons/md";
 import { TiShoppingCart } from "react-icons/ti";
+import { User } from "@prisma/client";
 
 const Header: FC = () => {
   const { data: session } = useSession();
   const cartQuantity = useAppSelector((state) => state.cart.cartQuantity);
 
-  const user = session && session.user;
+  const user = session && (session.user as User);
 
   return (
     <div className="container py-2 flex justify-between">
@@ -65,7 +66,7 @@ const Header: FC = () => {
             >
               <li>
                 <Link
-                  href="/profile"
+                  href={`/user/${user.id}`}
                   className="btn btn-ghost normal-case text-base"
                 >
                   My Account

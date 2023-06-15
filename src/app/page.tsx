@@ -1,5 +1,18 @@
-import getProducts from "./actions/getProducts";
+import prisma from "@/libs/prismadb";
 import ProductItem from "@/components/product/ProductItem";
+
+async function getProducts() {
+  try {
+    const products = await prisma.product.findMany({});
+    const typeSafeProducts = products.map((product) => ({
+      ...product,
+      createdAt: product.createdAt.toISOString(),
+    }));
+    return typeSafeProducts;
+  } catch (err: any) {
+    throw new Error(err);
+  }
+}
 
 export default async function Home() {
   const products = await getProducts();

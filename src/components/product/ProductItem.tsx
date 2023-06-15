@@ -2,12 +2,13 @@
 
 import { AppDispatch } from "@/store";
 import { cartActions } from "@/store/cart-slice";
+import { SafeProduct } from "@/types";
 import { Product } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
 import { useDispatch } from "react-redux";
 
-const ProductItem = ({ data }: { data: Product }) => {
+const ProductItem = ({ data }: { data: SafeProduct }) => {
   const dispatch = useDispatch<AppDispatch>();
 
   return (

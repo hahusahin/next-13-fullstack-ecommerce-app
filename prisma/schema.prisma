@@ -74,7 +74,6 @@ model Order {
   date      DateTime    @default(now())
   status    String
   total     Float
-  productId String      @db.ObjectId
   userId    String      @db.ObjectId
   orderItem OrderItem[]
 
