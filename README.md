@@ -12,6 +12,7 @@
 
 ## Used Tools
  * Next.js 13 App Directory
+ * Prisma
  * Mongo DB
  * React
  * Redux
