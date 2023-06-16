@@ -42,13 +42,14 @@ const Login = () => {
       redirect: false,
     }).then((callback) => {
       setIsLoading(false);
-      if (callback?.ok) {
+      if (callback?.ok && !callback?.error) {
         toast.success("Logged In Successfully!");
         router.back();
         router.refresh();
       }
+
       if (callback?.error) {
-        toast.error(callback.error);
+        toast.error(callback?.error);
       }
     });
   };
