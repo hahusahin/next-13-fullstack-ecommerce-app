@@ -1,4 +1,4 @@
-import client from "@/libs/prismadb";
+import prisma from "@/libs/prismadb";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
@@ -8,7 +8,7 @@ import bcrypt from "bcrypt";
 import { signJWTAccessToken } from "@/libs/jwt";
 
 export const authOptions: AuthOptions = NextAuth({
-  adapter: PrismaAdapter(client),
+  adapter: PrismaAdapter(prisma),
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID as string,
@@ -26,7 +26,7 @@ export const authOptions: AuthOptions = NextAuth({
           throw new Error("Invalid Credentials");
         }
         // find user from db (whose email is entered in the form)
-        const user = await prisma?.user.findUnique({
+        const user = await prisma.user.findUnique({
           where: {
             email: credentials.email,
           },
