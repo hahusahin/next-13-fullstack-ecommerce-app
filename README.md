@@ -5,7 +5,7 @@
 
 ## About This Project
  * In this project, I've created a simple fullstack e-commerce web app using Next.js latest app directory.
- * Added Authentication (you can sign up, login and can make review only if you are logged in)
+ * Added Authentication (you can sign up with credentials as well as Google, can make review only if you are logged in)
  * You can click on a product to see the product details.
  * You can see all reviews made for the product as well as you can make a new review
  * You can edit your shopping cart and place order
@@ -17,3 +17,4 @@
  * React
  * Redux
  * Tailwind CSS
+ * Next Auth for Authentication
