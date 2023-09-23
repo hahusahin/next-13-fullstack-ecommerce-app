@@ -14,10 +14,10 @@ import { useRouter } from "next/navigation";
 
 const registerSchema = yup
   .object({
-    name: yup.string().required("Name is a must"),
-    email: yup.string().email().required("Email is a must"),
-    city: yup.string().required("City is a must"),
     address: yup.string().required("Address is a must"),
+    city: yup.string().required("City is a must"),
+    zipCode: yup.string().required("Postal Code is a must"),
+    country: yup.string().required("Country is a must"),
   })
   .required();
 
@@ -62,44 +62,26 @@ const OrderForm = () => {
 
   return (
     <form
-      className="text-center mx-auto w-full max-w-[40rem] flex flex-col"
+      className="text-center mx-auto w-full max-w-[40rem] flex flex-col items-center"
       onSubmit={handleSubmit(onSubmit)}
     >
-      <div className="form-control w-full max-w-sm">
+      <div className="form-control w-full max-w-md">
         <label className="label label-text justify-start">
-          <span>Name</span>
+          <span>Address</span>
           <span className="text-red-400">&#65121;</span>
         </label>
-        <input
-          {...register("name")}
-          type="text"
-          className="input input-bordered input-sm"
-          defaultValue={user?.name ? user.name : ""}
-        />
-        {errors.name && (
+        <textarea
+          {...register("address")}
+          className="textarea textarea-bordered min-w-[400px] h-20"
+          defaultValue={user?.address ? user.address : ""}
+        ></textarea>
+        {errors.address && (
           <label className="label label-text text-red-400">
-            {errors.name.message}
+            {errors.address.message}
           </label>
         )}
       </div>
-      <div className="form-control w-full max-w-sm">
-        <label className="label label-text justify-start">
-          <span>Email</span>
-          <span className="text-red-400">&#65121;</span>
-        </label>
-        <input
-          {...register("email")}
-          type="email"
-          className="input input-bordered input-sm"
-          defaultValue={user?.email ? user.email : ""}
-        />
-        {errors.email && (
-          <label className="label label-text text-red-400">
-            {errors.email.message}
-          </label>
-        )}
-      </div>
-      <div className="form-control w-full max-w-sm">
+      <div className="form-control w-full max-w-md">
         <label className="label label-text justify-start">
           <span>City</span>
           <span className="text-red-400">&#65121;</span>
@@ -116,25 +98,44 @@ const OrderForm = () => {
           </label>
         )}
       </div>
-      <div className="form-control w-full max-w-sm">
+      <div className="form-control w-full max-w-md">
         <label className="label label-text justify-start">
-          <span>Address</span>
+          <span>Postal Code</span>
           <span className="text-red-400">&#65121;</span>
         </label>
-        <textarea
-          {...register("address")}
-          className="textarea textarea-bordered min-w-[400px] h-20"
-          defaultValue={user?.address ? user.address : ""}
-        ></textarea>
-        {errors.address && (
+        <input
+          {...register("zipCode")}
+          type="text"
+          className="input input-bordered input-sm"
+          defaultValue={user?.zipcode ? user.zipcode : ""}
+        />
+        {errors.zipCode && (
           <label className="label label-text text-red-400">
-            {errors.address.message}
+            {errors.zipCode.message}
           </label>
         )}
       </div>
+      <div className="form-control w-full max-w-md">
+        <label className="label label-text justify-start">
+          <span>Country</span>
+          <span className="text-red-400">&#65121;</span>
+        </label>
+        <input
+          {...register("country")}
+          type="text"
+          className="input input-bordered input-sm"
+          defaultValue={user?.country? user.country : ""}
+        />
+        {errors.country && (
+          <label className="label label-text text-red-400">
+            {errors.country.message}
+          </label>
+        )}
+      </div>
+      
       <button className="btn btn-primary mt-6 max-w-max" type="submit">
         {isLoading && <Spinner />}
-        Place Order
+        Continue
       </button>
     </form>
   );

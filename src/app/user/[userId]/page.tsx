@@ -26,7 +26,7 @@ async function getUserById(params: IParams) {
       updatedAt: safeUser.updatedAt.toISOString(),
       orders: safeUser.orders.map((order) => ({
         ...order,
-        date: order.date.toISOString(),
+        date: order.createdAt.toISOString(),
       })),
     };
   } catch (err: any) {

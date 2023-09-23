@@ -1,16 +1,15 @@
 import React from "react";
 import ItemQuantity from "./ItemQuantity";
 import { BsTrash } from "react-icons/bs";
-import { useDispatch } from "react-redux";
-import { CartItem, cartActions } from "../../store/cart-slice";
 import Image from "next/image";
+import useCartStore, { CartItem } from "@/hooks/useCartStore";
 
 const CartItem = ({ cartItem }: { cartItem: CartItem }) => {
-  const { id, name, imageUrl, quantity, totalPrice } = cartItem;
-  const dispatch = useDispatch();
+  const { removeFromCart } = useCartStore();
+  const { id, name, imageUrl, price, quantity } = cartItem;
 
   const onDeleteHandler = () => {
-    dispatch(cartActions.deleteFromCart({ id, quantity }));
+    removeFromCart(id, quantity);
   };
 
   return (
@@ -28,9 +27,9 @@ const CartItem = ({ cartItem }: { cartItem: CartItem }) => {
       </div>
       <div className="flex items-center gap-4 justify-center ms-auto">
         <ItemQuantity cartItem={cartItem} />
-        <span className="text-xl text-orange-600">{`$ ${totalPrice.toFixed(
-          2
-        )}`}</span>
+        <span className="text-xl text-orange-600">{`$ ${(
+          price * quantity
+        ).toFixed(2)}`}</span>
         <button
           className="btn btn-square btn-outline bg-transparent border-none"
           onClick={onDeleteHandler}

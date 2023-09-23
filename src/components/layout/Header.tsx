@@ -4,14 +4,18 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import { FC } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useAppSelector } from "@/store";
 import { MdComputer } from "react-icons/md";
 import { TiShoppingCart } from "react-icons/ti";
 import { User } from "@prisma/client";
+import useCartStore from "@/hooks/useCartStore";
+import useFromStore from "@/hooks/useFromStore";
 
 const Header: FC = () => {
   const { data: session } = useSession();
-  const cartQuantity = useAppSelector((state) => state.cart.cartQuantity);
+  const cartQuantity = useFromStore(
+    useCartStore,
+    (state) => state.cartQuantity
+  );
 
   const user = session && (session.user as User);
 
@@ -42,11 +46,13 @@ const Header: FC = () => {
         >
           <TiShoppingCart size="1.25rem" />
           <span className="mx-2">Cart</span>
-          {cartQuantity > 0 && (
-            <span className="badge badge-warning badge-md rounded-full">
-              {cartQuantity}
-            </span>
-          )}
+          <span
+            className={`badge badge-warning badge-md rounded-full ${
+              !cartQuantity || cartQuantity === 0 ? "hidden" : ""
+            }`}
+          >
+            {cartQuantity}
+          </span>
         </Link>
         {user && (
           <div className="dropdown dropdown-end">

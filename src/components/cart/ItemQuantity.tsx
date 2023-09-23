@@ -1,20 +1,18 @@
 "use client";
 
-import { useDispatch } from "react-redux";
-import { CartItem, cartActions } from "../../store/cart-slice";
-import { AppDispatch } from "@/store";
+import useCartStore, { CartItem } from "@/hooks/useCartStore";
 
 const ItemQuantity = ({ cartItem }: { cartItem: CartItem }) => {
+  const {  addToCart, removeFromCart } = useCartStore();
+
   const { id, quantity } = cartItem;
 
-  const dispatch = useDispatch<AppDispatch>();
-
   const decrementItem = () => {
-    dispatch(cartActions.removeItem(id));
+    removeFromCart(id)
   };
 
   const incrementItem = () => {
-    dispatch(cartActions.addItem(cartItem));
+    addToCart(cartItem);
   };
 
   return (

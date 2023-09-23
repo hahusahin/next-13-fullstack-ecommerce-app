@@ -1,15 +1,12 @@
 "use client";
 
-import { AppDispatch } from "@/store";
-import { cartActions } from "@/store/cart-slice";
+import useCartStore from "@/hooks/useCartStore";
 import { SafeProduct } from "@/types";
-import { Product } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
-import { useDispatch } from "react-redux";
 
 const ProductItem = ({ data }: { data: SafeProduct }) => {
-  const dispatch = useDispatch<AppDispatch>();
+  const { addToCart } = useCartStore();
 
   return (
     <div className="card bg-base-100 shadow-xl">
@@ -29,7 +26,7 @@ const ProductItem = ({ data }: { data: SafeProduct }) => {
         <div className="card-actions">
           <button
             className="btn btn-sm btn-info h-[40px] mt-2"
-            onClick={() => dispatch(cartActions.addItem(data))}
+            onClick={() => addToCart(data)}
           >
             Add to Cart
           </button>

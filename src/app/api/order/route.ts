@@ -1,6 +1,5 @@
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import prisma from "@/libs/prismadb";
-import { CartItem } from "@/store/cart-slice";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
@@ -12,27 +11,30 @@ export async function POST(request: Request) {
       { status: 400 }
     );
 
-  const body: { cartItems: CartItem[]; totalPrice: number } =
-    await request.json();
+  const data = await request.json();
 
-  const { cartItems, totalPrice } = body;
+  const {
+    itemsPrice,
+    shippingPrice,
+    taxPrice,
+    totalPrice,
+    orderItems,
+    shippingAddressId,
+  } = data;
 
   const order = await prisma.order.create({
     data: {
-      status: "pending",
-      total: totalPrice,
       userId: currentUser.id,
+      itemsPrice,
+      shippingPrice,
+      taxPrice,
+      totalPrice,
+      shippingAddressId,
+      orderItems: {
+        create: orderItems,
+      },
     },
   });
 
-  const orderItems = await prisma.orderItem.createMany({
-    data: cartItems.map((item) => ({
-      quantity: item.quantity,
-      price: item.price,
-      productId: item.id,
-      orderId: order.id,
-    })),
-  });
-
-  return NextResponse.json({ orderItems }, { status: 200 });
+  return NextResponse.json({ order }, { status: 200 });
 }
