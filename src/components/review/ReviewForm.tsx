@@ -18,7 +18,7 @@ const registerSchema = yup
 
 interface FormValues {
   rating: number;
-  review: string;
+  review?: string;
 }
 
 interface ReviewFormProps {
