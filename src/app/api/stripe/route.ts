@@ -1,10 +1,10 @@
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import { CartItem } from "@/store/cart-slice";
 import { formatAmountForStripe } from "@/utils/stripeUtils";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   const currentUser = await getCurrentUser();
 
   if (!currentUser)
@@ -58,8 +58,8 @@ export async function POST(request: Request) {
       },
     ],
 
-    success_url: `${process.env.APP_BASE_URL}/ordersummary?status=success`,
-    cancel_url: `${process.env.APP_BASE_URL}/ordersummary?status=fail`,
+    success_url: `${request.nextUrl.origin}/ordersummary?status=success`,
+    cancel_url: `${request.nextUrl.origin}/ordersummary?status=fail`,
   });
 
   return NextResponse.json(

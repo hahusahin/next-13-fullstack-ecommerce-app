@@ -1,19 +1,20 @@
-import Profile from "@/components/user/Profile";
-import prisma from "@/libs/prismadb";
+import prisma from "@/lib/prismadb";
+import getCurrentUser from "../actions/getCurrentUser";
+import Account from "@/components/account/Account";
 
-interface IParams {
-  userId?: string;
-}
-
-async function getUserById(params: IParams) {
+async function getUserAccount() {
   try {
-    const { userId } = params;
+    const currentUser = await getCurrentUser();
+
+    if (!currentUser) return null;
+
     const user = await prisma.user.findUnique({
       where: {
-        id: userId,
+        id: currentUser.id,
       },
       include: {
         orders: true,
+        addresses: true
       },
     });
 
@@ -34,12 +35,12 @@ async function getUserById(params: IParams) {
   }
 }
 
-const ProfilePage = async ({ params }: { params: IParams }) => {
-  const user = await getUserById(params);
+const AccountPage = async () => {
+  const user = await getUserAccount();
 
   if (!user) return <div>Not Found</div>;
 
-  return <Profile user={user} />;
+  return <Account user={user} />;
 };
 
-export default ProfilePage;
+export default AccountPage;

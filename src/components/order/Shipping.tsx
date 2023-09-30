@@ -67,7 +67,7 @@ const Shipping = ({ addresses }: { addresses: ShippingAddress[] }) => {
             {addresses.map((address) => (
               <button
                 key={address.id}
-                className="btn btn-outline btn-sm join-item"
+                className="btn btn-outline btn-sm join-item mx-2"
                 onClick={() =>
                   reset({
                     id: address.id,
@@ -93,9 +93,9 @@ const Shipping = ({ addresses }: { addresses: ShippingAddress[] }) => {
             type="text"
             className="input input-bordered input-sm"
           />
-          {errors.city && (
+          {errors.name && (
             <label className="label label-text text-red-400">
-              {errors.city.message}
+              {errors.name.message}
             </label>
           )}
         </div>

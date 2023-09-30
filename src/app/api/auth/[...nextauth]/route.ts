@@ -1,11 +1,11 @@
-import prisma from "@/libs/prismadb";
+import prisma from "@/lib/prismadb";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import NextAuth from "next-auth/next";
 import bcrypt from "bcrypt";
-import { signJWTAccessToken } from "@/libs/jwt";
+import { signJWTAccessToken } from "@/lib/jwt";
 
 export const authOptions: AuthOptions = NextAuth({
   adapter: PrismaAdapter(prisma),

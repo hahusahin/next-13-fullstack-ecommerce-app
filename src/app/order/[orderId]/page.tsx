@@ -1,5 +1,5 @@
 import OrderDetails from "@/components/order/OrderDetails";
-import prisma from "@/libs/prismadb";
+import prisma from "@/lib/prismadb";
 
 interface IParams {
   orderId?: string;

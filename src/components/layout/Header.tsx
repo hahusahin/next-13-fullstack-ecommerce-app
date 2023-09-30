@@ -9,6 +9,15 @@ import { TiShoppingCart } from "react-icons/ti";
 import { User } from "@prisma/client";
 import useCartStore from "@/hooks/useCartStore";
 import useFromStore from "@/hooks/useFromStore";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "../ui/button";
 
 const Header: FC = () => {
   const { data: session } = useSession();
@@ -54,7 +63,7 @@ const Header: FC = () => {
             {cartQuantity}
           </span>
         </Link>
-        {user && (
+        {user && user.role === "CUSTOMER" && (
           <div className="dropdown dropdown-end">
             <label tabIndex={0} className="avatar cursor-pointer">
               <div className="w-9">
@@ -72,7 +81,7 @@ const Header: FC = () => {
             >
               <li>
                 <Link
-                  href={`/user/${user.id}`}
+                  href={`/account`}
                   className="btn btn-ghost normal-case text-base"
                 >
                   My Account
@@ -88,6 +97,28 @@ const Header: FC = () => {
               </li>
             </ul>
           </div>
+        )}
+        {user && user.role === "ADMIN" && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="destructive">ADMIN</Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem>
+                <Link href={`/admin/products`}>Products</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem>Orders</DropdownMenuItem>
+              <DropdownMenuItem>Users</DropdownMenuItem>
+              <DropdownMenuItem>
+                <Button
+                  variant="ghost"
+                  onClick={() => signOut({ callbackUrl: "/" })}
+                >
+                  Signout
+                </Button>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         )}
       </div>
     </div>

@@ -1,4 +1,4 @@
-import prisma from "@/libs/prismadb";
+import prisma from "@/lib/prismadb";
 import getCurrentUser from "../actions/getCurrentUser";
 import Shipping from "@/components/order/Shipping";
 

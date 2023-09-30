@@ -46,15 +46,18 @@ model Account {
 }
 
 model Product {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  name        String
-  description String
-  imageUrl    String
-  price       Float
-  rating      Float
-  createdAt   DateTime @default(now())
-  reviews     Review[]
-  orderItems  OrderItem[]
+  id           String      @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  description  String
+  imageUrl     String
+  price        Float
+  rating       Float
+  brand        String
+  category     String
+  countInStock Int
+  createdAt    DateTime    @default(now())
+  reviews      Review[]
+  orderItems   OrderItem[]
 }
 
 model Order {
