@@ -9,7 +9,11 @@ export default async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
 
   if ([...authRotes, ...adminRoutes].includes(path)) {
-    const session = request.cookies.get("next-auth.session-token");
+    const session = request.cookies.get(
+      process.env.NODE_ENV === "development"
+        ? "next-auth.session-token"
+        : "__Secure-next-auth.session-token"
+    );
 
     if (!session) {
       return NextResponse.redirect(
