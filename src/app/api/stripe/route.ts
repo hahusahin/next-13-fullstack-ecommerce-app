@@ -1,5 +1,5 @@
 import getCurrentUser from "@/app/actions/getCurrentUser";
-import { CartItem } from "@/store/cart-slice";
+import { CartItem } from "@/hooks/useCartStore";
 import { formatAmountForStripe } from "@/utils/stripeUtils";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";

@@ -15,6 +15,5 @@
  * Prisma
  * Mongo DB
  * React
- * Redux
  * Tailwind CSS
  * Next Auth for Authentication

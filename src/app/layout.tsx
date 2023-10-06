@@ -5,7 +5,6 @@ import "./globals.css";
 import ClientOnly from "@/components/ClientOnly";
 import ToasterProvider from "@/providers/ToasterProvider";
 import NextAuthSessionProvider from "@/providers/SessionProvider";
-import ReduxProvider from "@/providers/ReduxProvider";
 
 const rubik = Rubik({ subsets: ["latin"] });
 
@@ -23,16 +22,14 @@ export default async function RootLayout({
     <html lang="en">
       <body className={`${rubik.className} bg-slate-100`}>
         <NextAuthSessionProvider>
-          <ReduxProvider>
-            <ClientOnly>
-              <ToasterProvider />
-            </ClientOnly>
-            <main className="container flex flex-col justify-between items-center min-h-screen overflow-y-auto">
-              <Header />
-              {children}
-              <Footer />
-            </main>
-          </ReduxProvider>
+          <ClientOnly>
+            <ToasterProvider />
+          </ClientOnly>
+          <main className="container flex flex-col justify-between items-center min-h-screen overflow-y-auto">
+            <Header />
+            {children}
+            <Footer />
+          </main>
         </NextAuthSessionProvider>
       </body>
     </html>

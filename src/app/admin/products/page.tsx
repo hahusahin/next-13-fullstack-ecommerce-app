@@ -1,12 +1,10 @@
 import prisma from "@/lib/prismadb";
 import AllProducts from "@/components/admin/AllProducts";
 import getCurrentUser from "@/app/actions/getCurrentUser";
+import { redirect } from "next/navigation";
 
 async function getProducts() {
   try {
-    const currentUser = await getCurrentUser();
-    // if (currentUser?.role !== "ADMIN") throw new Error("Not Authorized");
-
     const products = await prisma.product.findMany({});
     const typeSafeProducts = products.map((product) => ({
       ...product,
@@ -19,6 +17,10 @@ async function getProducts() {
 }
 
 const AdminProductsPage = async () => {
+  const currentUser = await getCurrentUser();
+  
+  if (!currentUser || currentUser.role !== "ADMIN") redirect("/")
+
   const products = await getProducts();
 
   return <AllProducts products={products} />;

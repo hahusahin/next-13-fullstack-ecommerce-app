@@ -1,10 +1,11 @@
 import prisma from "@/lib/prismadb";
 import getCurrentUser from "../actions/getCurrentUser";
 import Shipping from "@/components/order/Shipping";
+import { redirect } from "next/navigation";
+import { SafeUser } from "@/types";
 
-async function getUserAddresses() {
+async function getUserAddresses(currentUser: SafeUser) {
   try {
-    const currentUser = await getCurrentUser();
     const addresses = await prisma.shippingAddress.findMany({
       where: { userId: currentUser?.id },
     });
@@ -18,7 +19,11 @@ async function getUserAddresses() {
 }
 
 const ShippingPage = async () => {
-  const addresses = await getUserAddresses();
+  const user = await getCurrentUser();
+
+  if (!user) redirect("/login?callbackUrl=/shipping");
+
+  const addresses = await getUserAddresses(user);
 
   if (!addresses) return <div>Not Found</div>;
 

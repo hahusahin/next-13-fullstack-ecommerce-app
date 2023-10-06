@@ -11,6 +11,8 @@ import { Loader2 } from "lucide-react";
 import { IoAddOutline } from "react-icons/io5";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
+import useQuery from "@/hooks/useQuery";
+import { useRouter } from "next/navigation";
 
 const registerSchema = yup
   .object({
@@ -33,11 +35,14 @@ const registerSchema = yup
 type FormData = yup.InferType<typeof registerSchema>;
 
 const UpdateUserForm = ({ user }: ProfileProps) => {
-  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+
+  const { mutate, isLoading } = useQuery<FormData>();
 
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<FormData>({
     resolver: yupResolver(registerSchema),
@@ -50,19 +55,18 @@ const UpdateUserForm = ({ user }: ProfileProps) => {
   });
 
   const onSubmit = async (data: FormData) => {
-    setIsLoading(true);
-    axios
-      .put(`/api/account/`, data)
-      .then(() => {
-        toast.success("Profile Updated Successfully!");
-      })
-      .catch((err) => {
-        console.log(err);
-        toast.error(err?.response?.data?.error || "Something went wrong!");
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+    mutate(
+      { url: "/api/account", method: "PUT", data },
+      {
+        onSuccess: () => {
+          toast.success("Profile Updated Successfully!");
+          router.refresh();
+          // reset();
+        },
+        onError: (error) =>
+          toast.error(error.message || "Something went wrong!"),
+      }
+    );
   };
 
   return (
@@ -158,10 +162,10 @@ const UpdateUserForm = ({ user }: ProfileProps) => {
           </div>
         </CardContent>
         <CardFooter>
-        <Button className="mx-auto" type="submit">
-              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Update
-            </Button>
+          <Button className="mx-auto" type="submit" disabled={isLoading}>
+            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Update
+          </Button>
         </CardFooter>
       </form>
     </Card>

@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";
 import { FcGoogle } from "react-icons/fc";
@@ -26,6 +26,7 @@ type FormData = yup.InferType<typeof loginSchema>;
 const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const {
     register,
@@ -42,14 +43,13 @@ const Login = () => {
       redirect: false,
     }).then((callback) => {
       setIsLoading(false);
-      if (callback?.ok && !callback?.error) {
-        toast.success("Logged In Successfully!");
-        router.back();
-        router.refresh();
-      }
-
       if (callback?.error) {
-        toast.error(callback?.error);
+        toast.error(callback.error);
+      } else {
+        const callbackUrl = searchParams.get("callbackUrl");
+        router.push(callbackUrl ? callbackUrl : "/");
+        router.refresh();
+        toast.success("Logged In Successfully");
       }
     });
   };

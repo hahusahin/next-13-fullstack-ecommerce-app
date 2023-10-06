@@ -5,15 +5,22 @@ import useCartStore from "@/hooks/useCartStore";
 import useFromStore from "@/hooks/useFromStore";
 import getStripe from "@/utils/get-stripe";
 import axios from "axios";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { redirect, useRouter, useSearchParams } from "next/navigation";
 import React, { useCallback, useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 
 const OrderSummmary = () => {
   const router = useRouter();
   const params = useSearchParams();
+  useSession({
+    required: true,
+    onUnauthenticated() {
+      redirect("/login?callbackUrl=/ordersummary");
+    },
+  });
 
   const [isProcessingOrder, setIsProcessingOrder] = useState(false);
 

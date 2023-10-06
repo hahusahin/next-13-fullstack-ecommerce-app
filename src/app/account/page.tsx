@@ -1,20 +1,24 @@
 import prisma from "@/lib/prismadb";
-import getCurrentUser from "../actions/getCurrentUser";
 import Account from "@/components/account/Account";
+import { redirect } from "next/navigation";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../api/auth/[...nextauth]/route";
 
 async function getUserAccount() {
   try {
-    const currentUser = await getCurrentUser();
+    const session = await getServerSession(authOptions);
 
-    if (!currentUser) return null;
+    if (!session?.user?.email) {
+      return null;
+    }
 
     const user = await prisma.user.findUnique({
       where: {
-        id: currentUser.id,
+        email: session.user.email,
       },
       include: {
         orders: true,
-        addresses: true
+        addresses: true,
       },
     });
 
@@ -38,7 +42,7 @@ async function getUserAccount() {
 const AccountPage = async () => {
   const user = await getUserAccount();
 
-  if (!user) return <div>Not Found</div>;
+  if (!user) redirect("/login?callbackUrl=/account");
 
   return <Account user={user} />;
 };

@@ -5,10 +5,11 @@ import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import axios from "axios";
 import { toast } from "react-hot-toast";
 import { Loader2 } from "lucide-react";
 import { IoAddOutline } from "react-icons/io5";
+import useQuery from "@/hooks/useQuery";
+import { useRouter } from "next/navigation";
 
 const registerSchema = yup.object({
   id: yup.string(),
@@ -22,8 +23,8 @@ const registerSchema = yup.object({
 type ShippingFormData = yup.InferType<typeof registerSchema>;
 
 const UpdateAddressForm = ({ user }: ProfileProps) => {
+  const router = useRouter();
   const [showForm, setShowForm] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
   const {
     register,
@@ -34,19 +35,29 @@ const UpdateAddressForm = ({ user }: ProfileProps) => {
     resolver: yupResolver(registerSchema),
   });
 
+  const { mutate, isLoading } = useQuery<ShippingFormData>();
+
+  const callbackFn = () => {
+    setShowForm(false);
+    reset();
+    router.refresh();
+  };
+
   const onSubmit = (data: ShippingFormData) => {
-    setIsLoading(true);
-    axios
-      .post("/api/shipping", data)
-      .then((res) => {
-        toast.success("Address Saved Successfully!");
-      })
-      .catch((error) => {
-        toast.error(error);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+    mutate(
+      { url: "/api/shipping", method: "POST", data },
+      {
+        onSuccess: () => {
+          toast.success("Address Saved Successfully!");
+          callbackFn();
+        },
+        onError: (error) => {
+          toast.error(error.message);
+          setShowForm(false);
+          callbackFn();
+        },
+      }
+    );
   };
 
   return (
@@ -182,7 +193,7 @@ const UpdateAddressForm = ({ user }: ProfileProps) => {
         </CardContent>
         <CardFooter>
           {showForm && (
-            <Button type="submit" className="mx-auto">
+            <Button type="submit" className="mx-auto" disabled={isLoading}>
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Save
             </Button>

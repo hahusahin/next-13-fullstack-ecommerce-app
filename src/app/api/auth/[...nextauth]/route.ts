@@ -32,8 +32,7 @@ export const authOptions: AuthOptions = NextAuth({
           },
         });
         // if couldn't find user or password not exists
-        if (!user || !user?.hashedPassword)
-          throw new Error("User Not Found");
+        if (!user || !user?.hashedPassword) throw new Error("User Not Found");
         // compare entered password with hashed password stored in the db
         const isPasswordCorrect = await bcrypt.compare(
           credentials.password,
@@ -43,7 +42,7 @@ export const authOptions: AuthOptions = NextAuth({
         if (!isPasswordCorrect) throw new Error("Invalid Credentials");
         // if everything is fine, create access token and return with user
         const { hashedPassword, ...safeUser } = user;
-        const accessToken = signJWTAccessToken(safeUser);
+        const accessToken = signJWTAccessToken({ userId: user.id });
         const response = { ...safeUser, accessToken };
         return response;
       },
@@ -51,9 +50,11 @@ export const authOptions: AuthOptions = NextAuth({
   ],
   pages: {
     signIn: "/login",
+    error: "/login",
   },
   session: {
     strategy: "jwt",
+    maxAge: 604800, // 7 days
   },
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
@@ -65,7 +66,7 @@ export const authOptions: AuthOptions = NextAuth({
       return session;
     },
   },
-  // debug: process.env.NODE_ENV === "development",
+  debug: process.env.NODE_ENV === "development",
 });
 
 export { authOptions as GET, authOptions as POST };
