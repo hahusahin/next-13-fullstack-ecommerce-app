@@ -4,6 +4,8 @@ import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 
+export const dynamic = "force-dynamic";
+
 async function getUserAccount() {
   try {
     const session = await getServerSession(authOptions);
