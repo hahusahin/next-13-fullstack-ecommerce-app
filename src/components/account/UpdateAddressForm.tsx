@@ -5,11 +5,12 @@ import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { toast } from "react-hot-toast";
 import { Loader2 } from "lucide-react";
 import { IoAddOutline } from "react-icons/io5";
-import useQuery from "@/hooks/useQuery";
 import { useRouter } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
+import { useToast } from "../ui/use-toast";
 
 const registerSchema = yup.object({
   id: yup.string(),
@@ -24,6 +25,8 @@ type ShippingFormData = yup.InferType<typeof registerSchema>;
 
 const UpdateAddressForm = ({ user }: ProfileProps) => {
   const router = useRouter();
+  const { toast } = useToast();
+
   const [showForm, setShowForm] = useState(false);
 
   const {
@@ -35,29 +38,26 @@ const UpdateAddressForm = ({ user }: ProfileProps) => {
     resolver: yupResolver(registerSchema),
   });
 
-  const { mutate, isLoading } = useQuery<ShippingFormData>();
-
-  const callbackFn = () => {
-    setShowForm(false);
-    reset();
-    router.refresh();
-  };
+  const { mutate: updateAddress, isLoading } = useMutation({
+    mutationFn: async (data: ShippingFormData) =>
+      await axios.post("/api/shipping", data),
+    onSuccess: () => {
+      setShowForm(false);
+      toast({
+        title: "Profile Updated Successfully!",
+      });
+      router.refresh();
+    },
+    onError: (error: any) => {
+      toast({
+        variant: "destructive",
+        title: error.response?.data?.message || "Something went wrong!",
+      });
+    },
+  });
 
   const onSubmit = (data: ShippingFormData) => {
-    mutate(
-      { url: "/api/shipping", method: "POST", data },
-      {
-        onSuccess: () => {
-          toast.success("Address Saved Successfully!");
-          callbackFn();
-        },
-        onError: (error) => {
-          toast.error(error.message);
-          setShowForm(false);
-          callbackFn();
-        },
-      }
-    );
+    updateAddress(data);
   };
 
   return (

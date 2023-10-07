@@ -32,7 +32,7 @@ const Header: FC = () => {
     <div className="container py-2 flex justify-between">
       <Link href="/" className="flex gap-2 items-center">
         <MdComputer size="32px" />
-        <span className="text-lg">Products</span>
+        <span className="text-lg">E-Shop</span>
       </Link>
       <div className="flex items-center gap-6">
         <Link

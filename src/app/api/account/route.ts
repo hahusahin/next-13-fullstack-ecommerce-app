@@ -7,7 +7,7 @@ export async function PUT(request: Request) {
   const currentUser = await getCurrentUser();
 
   if (!currentUser)
-    return NextResponse.json({ error: "User Not Found" }, { status: 404 });
+    return NextResponse.json({ message: "User Not Found" }, { status: 404 });
 
   const body = await request.json();
 

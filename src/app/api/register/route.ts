@@ -11,10 +11,10 @@ export async function POST(request: Request) {
     const alreadyExistUser = await prisma.user.findUnique({ where: { email } });
 
     if (alreadyExistUser)
-      return NextResponse.json(null, {
-        status: 409,
-        statusText: "User Already Exists",
-      });
+      return NextResponse.json(
+        { message: "User Already Exists" },
+        { status: 409 }
+      );
 
     const hashedPassword = await bcrypt.hash(password, 12);
 
@@ -32,9 +32,11 @@ export async function POST(request: Request) {
 
     return NextResponse.json(safeUser, { status: 200 });
   } catch (error) {
-    return NextResponse.json(null, {
-      status: 500,
-      statusText: "Something went wrong ! Please try again later",
-    });
+    return NextResponse.json(
+      { message: "Something went wrong ! Please try again later" },
+      {
+        status: 500,
+      }
+    );
   }
 }

@@ -4,14 +4,15 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useRouter } from "next/navigation";
-import { toast } from "react-hot-toast";
 import { signIn, useSession } from "next-auth/react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
-import useQuery from "@/hooks/useQuery";
 import { useEffect } from "react";
+import { useMutation } from "@tanstack/react-query";
+import axios, { AxiosError } from "axios";
+import { useToast } from "@/components/ui/use-toast";
 
 const registerSchema = yup
   .object({
@@ -30,42 +31,53 @@ type FormData = yup.InferType<typeof registerSchema>;
 
 const Register = () => {
   const router = useRouter();
-  const { mutate, isLoading } = useQuery<FormData>();
+  const { toast } = useToast();
 
   const {
     register,
     handleSubmit,
+    getValues,
     formState: { errors },
   } = useForm<FormData>({
     resolver: yupResolver(registerSchema),
   });
 
-  const onSubmit = async (data: FormData) => {
-    mutate(
-      { url: "/api/register", method: "POST", data },
-      {
-        onSuccess: () => {
-          toast.success("Created Account Successfully!");
-          signIn("credentials", {
-            email: data.email,
-            password: data.password,
-            redirect: false,
-          }).then((callback) => {
-            if (callback?.ok) {
-              router.push("/");
-              router.refresh();
-              toast.success("Logged In Successfully");
-            }
-            if (callback?.error) {
-              toast.error(callback.error);
-            }
+  const { mutate: createUser, isLoading } = useMutation({
+    mutationFn: (data: FormData) => axios.post("/api/register", data),
+    onSuccess: () => {
+      toast({
+        title: "Created Account Successfully!",
+      });
+      signIn("credentials", {
+        email: getValues("email"),
+        password: getValues("password"),
+        redirect: false,
+      }).then((callback) => {
+        if (callback?.ok) {
+          router.push("/");
+          router.refresh();
+          toast({
+            title: "Logged In Successfully",
           });
-        },
-        onError: (error) => {
-          toast.error(error.response?.statusText || "Something went wrong!");
-        },
-      }
-    );
+        }
+        if (callback?.error) {
+          toast({
+            variant: "destructive",
+            title: callback.error,
+          });
+        }
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        variant: "destructive",
+        title: error.response?.data?.message || "Something went wrong!",
+      });
+    },
+  });
+
+  const onSubmit = async (data: FormData) => {
+    createUser(data);
   };
 
   const { data: session } = useSession();

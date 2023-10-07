@@ -7,7 +7,7 @@ export async function POST(request: Request) {
 
   if (!currentUser)
     return NextResponse.json(
-      { error: "Something went wrong" },
+      { message: "Something went wrong" },
       { status: 400 }
     );
 

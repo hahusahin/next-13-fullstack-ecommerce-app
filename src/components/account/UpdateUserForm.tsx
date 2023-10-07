@@ -6,13 +6,12 @@ import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import axios from "axios";
-import { toast } from "react-hot-toast";
 import { Loader2 } from "lucide-react";
-import { IoAddOutline } from "react-icons/io5";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
-import useQuery from "@/hooks/useQuery";
 import { useRouter } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
+import { useToast } from "../ui/use-toast";
 
 const registerSchema = yup
   .object({
@@ -36,13 +35,11 @@ type FormData = yup.InferType<typeof registerSchema>;
 
 const UpdateUserForm = ({ user }: ProfileProps) => {
   const router = useRouter();
-
-  const { mutate, isLoading } = useQuery<FormData>();
+  const { toast } = useToast();
 
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors },
   } = useForm<FormData>({
     resolver: yupResolver(registerSchema),
@@ -54,19 +51,22 @@ const UpdateUserForm = ({ user }: ProfileProps) => {
     },
   });
 
-  const onSubmit = async (data: FormData) => {
-    mutate(
-      { url: "/api/account", method: "PUT", data },
-      {
-        onSuccess: () => {
-          toast.success("Profile Updated Successfully!");
-          router.refresh();
-          // reset();
-        },
-        onError: (error) =>
-          toast.error(error.message || "Something went wrong!"),
-      }
-    );
+  const { mutate: updateUser, isLoading } = useMutation({
+    mutationFn: async (data: FormData) => await axios.put("/api/account", data),
+    onSuccess: () => {
+      toast({ title: "Profile Updated Successfully!" });
+      router.refresh();
+    },
+    onError: (error: any) => {
+      toast({
+        variant: "destructive",
+        title: error.response?.data?.message || "Something went wrong!",
+      });
+    },
+  });
+
+  const onSubmit = (data: FormData) => {
+    updateUser(data);
   };
 
   return (
