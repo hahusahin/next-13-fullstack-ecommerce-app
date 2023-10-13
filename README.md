@@ -4,16 +4,21 @@
 <h3> https://next-13-fullstack-ecommerce-app.vercel.app/ </h3>
 
 ## About This Project
- * In this project, I've created a simple fullstack e-commerce web app using Next.js latest app directory.
- * Added Authentication (you can sign up with credentials as well as Google, can make review only if you are logged in)
- * You can click on a product to see the product details.
- * You can see all reviews made for the product as well as you can make a new review
- * You can edit your shopping cart and place order
+ * In this project, I've created a fullstack e-commerce web app using Next.js latest app directory.
+ * Has Admin views for managing products, users and orders.
+ * Has authentication with both credentials and Social Login using Next Auth.
+ * Has review system
+ * Implemented payment using Stripe
+ * Can follow your orders
 
 ## Used Tools
- * Next.js 13 App Directory
+ * Next.js 13 (App Directory)
+ * React + Typescript
  * Prisma
  * Mongo DB
- * React
  * Tailwind CSS
- * Next Auth for Authentication
+ * React Hook Form + yup
+ * Next Auth
+ * Shadcn UI
+ * Zustand
+ * React Query
