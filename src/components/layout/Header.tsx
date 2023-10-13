@@ -18,6 +18,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "../ui/button";
+import { Badge, badgeVariants } from "../ui/badge";
 
 const Header: FC = () => {
   const { data: session } = useSession();
@@ -26,7 +27,7 @@ const Header: FC = () => {
     (state) => state.cartQuantity
   );
 
-  const user = session && (session.user as User);
+  const user = session && session.user;
 
   return (
     <div className="container py-2 flex justify-between">
@@ -34,39 +35,33 @@ const Header: FC = () => {
         <MdComputer size="32px" />
         <span className="text-lg">E-Shop</span>
       </Link>
-      <div className="flex items-center gap-6">
-        <Link
-          href="/"
-          className="btn btn-ghost hover:bg-transparent normal-case text-base"
-        >
-          Home
+      <div className="flex items-center gap-2">
+        <Link href="/">
+          <Button variant="ghost">Home</Button>
         </Link>
         {!user && (
-          <button
-            className="btn btn-ghost hover:bg-transparent normal-case text-base"
-            onClick={() => signIn()}
-          >
+          <Button variant="ghost" onClick={() => signIn()}>
             Login
-          </button>
+          </Button>
         )}
-        <Link
-          href="/cart"
-          className="btn btn-ghost hover:bg-transparent normal-case text-base"
-        >
-          <TiShoppingCart size="1.25rem" />
-          <span className="mx-2">Cart</span>
-          <span
-            className={`badge badge-warning badge-md rounded-full ${
-              !cartQuantity || cartQuantity === 0 ? "hidden" : ""
-            }`}
-          >
-            {cartQuantity}
-          </span>
+        <Link href="/cart">
+          <Button variant="ghost" className="flex gap-1">
+            <TiShoppingCart size="1.25rem" />
+            <span>Cart</span>
+            <Badge
+              variant="warning"
+              className={
+                !cartQuantity || cartQuantity === 0 ? "hidden" : "text-md"
+              }
+            >
+              {cartQuantity}
+            </Badge>
+          </Button>
         </Link>
         {user && user.role === "CUSTOMER" && (
-          <div className="dropdown dropdown-end">
-            <label tabIndex={0} className="avatar cursor-pointer">
-              <div className="w-9">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <div className="w-8 h-8 relative cursor-pointer">
                 <Image
                   fill
                   src={user.image || "/images/avatar.png"}
@@ -74,29 +69,18 @@ const Header: FC = () => {
                   className="rounded-full"
                 />
               </div>
-            </label>
-            <ul
-              tabIndex={0}
-              className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52"
-            >
-              <li>
-                <Link
-                  href={`/account`}
-                  className="btn btn-ghost normal-case text-base"
-                >
-                  My Account
-                </Link>
-              </li>
-              <li>
-                <button
-                  className="btn btn-ghost normal-case text-base"
-                  onClick={() => signOut({ callbackUrl: "/" })}
-                >
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem>
+                <Link href={`/account`}>My Account</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <span onClick={() => signOut({ callbackUrl: "/" })}>
                   Signout
-                </button>
-              </li>
-            </ul>
-          </div>
+                </span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         )}
         {user && user.role === "ADMIN" && (
           <DropdownMenu>

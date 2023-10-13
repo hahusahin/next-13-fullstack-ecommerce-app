@@ -5,11 +5,15 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
 import Link from "next/link";
 import { FcGoogle } from "react-icons/fc";
-import Spinner from "@/components/Spinner";
-import { toast } from "react-hot-toast";
+import { useMutation } from "@tanstack/react-query";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
+import { Separator } from "@/components/ui/separator";
 
 const loginSchema = yup
   .object({
@@ -24,8 +28,8 @@ const loginSchema = yup
 type FormData = yup.InferType<typeof loginSchema>;
 
 const Login = () => {
-  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const { toast } = useToast();
   const searchParams = useSearchParams();
 
   const {
@@ -36,75 +40,75 @@ const Login = () => {
     resolver: yupResolver(loginSchema),
   });
 
-  const onSubmit = async (data: FormData) => {
-    setIsLoading(true);
-    signIn("credentials", {
-      ...data,
-      redirect: false,
-    }).then((callback) => {
-      setIsLoading(false);
-      if (callback?.error) {
-        toast.error(callback.error);
-      } else {
-        const callbackUrl = searchParams.get("callbackUrl");
-        router.push(callbackUrl ? callbackUrl : "/");
-        router.refresh();
-        toast.success("Logged In Successfully");
-      }
-    });
-  };
+  const { mutate: loginUser, isLoading } = useMutation({
+    mutationFn: async (data: FormData) =>
+      signIn("credentials", {
+        ...data,
+        redirect: false,
+      }).then((callback) => {
+        if (callback?.error) {
+          toast({
+            variant: "destructive",
+            title: callback.error,
+          });
+        } else {
+          const callbackUrl = searchParams.get("callbackUrl");
+          router.push(callbackUrl ? callbackUrl : "/");
+          router.refresh();
+          toast({
+            title: "Logged In Successfully",
+          });
+        }
+      }),
+  });
 
-  if (isLoading) return <Spinner />;
+  const onSubmit = (data: FormData) => loginUser(data);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="container my-8">
-      <div className="flex flex-col gap-4 items-center mx-auto max-w-[25rem] p-8 border-2 border-blue-300 rounded-xl">
+      <div className="flex flex-col gap-6 items-center mx-auto max-w-[25rem] p-8 border-2 border-gray-300 rounded-xl shadow-md">
         <p className="text-2xl font-bold">Login</p>
-        <div className="form-control w-full">
-          <label className="label">
-            <span className="text-base font-medium label-text">Your Email</span>
-          </label>
-          <input
-            className="input input-bordered border-blue-200 w-full"
-            type="email"
-            {...register("email")}
-          />
+        <div className="flex flex-col gap-2 w-full">
+          <Label className="text-left ml-2">
+            <span>Your Email</span>
+            <span className="text-red-400">&#65121;</span>
+          </Label>
+          <Input {...register("email")} />
           {errors.email && (
-            <label className="label label-text text-red-400">
-              {errors.email.message}
-            </label>
+            <span className="text-sm text-red-400">{errors.email.message}</span>
           )}
         </div>
-        <div className="form-control w-full">
-          <label className="label">
-            <span className="text-base font-medium label-text">
-              Your Password
-            </span>
-          </label>
-          <input
-            className="input input-bordered border-blue-200 w-full"
-            type="password"
-            {...register("password")}
-          />
+        <div className="flex flex-col gap-2 w-full">
+          <Label className="text-left ml-2">
+            <span>Your Password</span>
+            <span className="text-red-400">&#65121;</span>
+          </Label>
+          <Input type="password" {...register("password")} />
           {errors.password && (
-            <label className="label label-text text-red-400">
+            <span className="text-sm text-red-400">
               {errors.password.message}
-            </label>
+            </span>
           )}
         </div>
-        <button className="btn btn-info mt-2 max-w-max" type="submit">
-          {isLoading && <span className="loading loading-spinner"></span>}
+        <Button
+          variant="primary"
+          type="submit"
+          className="mx-auto"
+          disabled={isLoading}
+        >
+          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Login
-        </button>
-        <div className="divider my-0" />
-
-        <button
-          className="btn btn-outline w-full"
+        </Button>
+        <Separator className="my-0" />
+        <Button
+          className="w-full"
+          variant="outline"
+          type="button"
           onClick={() => signIn("google", { callbackUrl: "/" })}
         >
           <FcGoogle className="mr-2" />
           Continue With Google
-        </button>
+        </Button>
         <Link
           href="/register"
           className="link link-hover text-gray-700 font-medium mt-4"

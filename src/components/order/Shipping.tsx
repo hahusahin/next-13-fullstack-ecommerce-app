@@ -5,10 +5,16 @@ import { ShippingAddress } from "@prisma/client";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { useRouter } from "next/navigation";
-
 import axios from "axios";
-import { toast } from "react-hot-toast";
 import useCartStore from "@/hooks/useCartStore";
+import { Button } from "../ui/button";
+import { Label } from "../ui/label";
+import { Input } from "../ui/input";
+import { Textarea } from "../ui/textarea";
+import { Loader2 } from "lucide-react";
+import { useMutation } from "@tanstack/react-query";
+import { useToast } from "../ui/use-toast";
+import { IoAddOutline } from "react-icons/io5";
 
 const registerSchema = yup.object({
   id: yup.string(),
@@ -23,6 +29,7 @@ type ShippingFormData = yup.InferType<typeof registerSchema>;
 
 const Shipping = ({ addresses }: { addresses: ShippingAddress[] }) => {
   const router = useRouter();
+  const { toast } = useToast();
 
   const { addAddressToCart } = useCartStore();
 
@@ -36,21 +43,24 @@ const Shipping = ({ addresses }: { addresses: ShippingAddress[] }) => {
     resolver: yupResolver(registerSchema),
   });
 
+  const { mutate: saveAddress, isLoading } = useMutation({
+    mutationFn: async () => await axios.post("/api/shipping", getValues()),
+    onSuccess: (res) => {
+      addAddressToCart(res.data);
+      toast({ title: "Address Saved Successfully!" });
+      router.refresh();
+    },
+    onError: (error: any) => {
+      toast({
+        variant: "destructive",
+        title: error.response?.data?.message || "Something went wrong!",
+      });
+    },
+  });
+
   const onSubmit = (data: ShippingFormData) => {
     addAddressToCart({ ...data, id: data.id ? data.id : "" });
     router.push("/ordersummary");
-  };
-
-  const saveAddressHandler = () => {
-    axios
-      .post("/api/shipping", getValues())
-      .then((res) => {
-        addAddressToCart(res.data);
-        toast.success("Address Saved Successfully!");
-      })
-      .catch((error) => {
-        toast.error(error);
-      });
   };
 
   return (
@@ -59,121 +69,117 @@ const Shipping = ({ addresses }: { addresses: ShippingAddress[] }) => {
         Select Shipping Address
       </p>
       <form
-        className="text-center mx-auto w-full max-w-[40rem] flex flex-col items-center"
+        className="mx-auto w-full max-w-[40rem] flex flex-col items-center gap-4"
         onSubmit={handleSubmit(onSubmit)}
       >
-        <div className="form-control w-full max-w-md">
-          <div className="join">
-            {addresses.map((address) => (
-              <button
-                key={address.id}
-                className="btn btn-outline btn-sm join-item mx-2"
-                onClick={() =>
-                  reset({
-                    id: address.id,
-                    name: address.name,
-                    address: address.address,
-                    zipcode: address.zipcode,
-                    city: address.city,
-                    country: address.country,
-                  })
-                }
-                type="button"
-              >
-                {address.name}
-              </button>
-            ))}
-          </div>
-          <label className="label label-text justify-start">
+        <div className="flex gap-4">
+          {addresses.map((address) => (
+            <Button
+              variant="outline-dark"
+              key={address.id}
+              onClick={() =>
+                reset({
+                  id: address.id,
+                  name: address.name,
+                  address: address.address,
+                  zipcode: address.zipcode,
+                  city: address.city,
+                  country: address.country,
+                })
+              }
+              type="button"
+            >
+              {address.name}
+            </Button>
+          ))}
+          <Button
+              type="button"
+              variant="outline-dark"
+              size="icon"
+              onClick={() => {
+                reset({
+                  id: "",
+                  name: "",
+                  address: "",
+                  zipcode: "",
+                  city: "",
+                  country: "",
+                });
+              }}
+            >
+              <IoAddOutline size="20" />
+            </Button>
+        </div>
+        <div className="w-full max-w-md flex flex-col gap-2">
+          <Label className="ml-2">
             <span>Label</span>
             <span className="text-red-400">&#65121;</span>
-          </label>
-          <input
-            {...register("name")}
-            type="text"
-            className="input input-bordered input-sm"
-          />
+          </Label>
+          <Input {...register("name")} />
           {errors.name && (
-            <label className="label label-text text-red-400">
-              {errors.name.message}
-            </label>
+            <span className="text-sm text-red-400">{errors.name.message}</span>
           )}
         </div>
-        <div className="form-control w-full max-w-md">
-          <label className="label label-text justify-start">
+        <div className="w-full max-w-md flex flex-col gap-2">
+          <Label className="ml-2">
             <span>Address</span>
             <span className="text-red-400">&#65121;</span>
-          </label>
-          <textarea
-            {...register("address")}
-            className="textarea textarea-bordered min-w-[400px] h-20"
-          ></textarea>
+          </Label>
+          <Textarea className="min-w-[400px] h-20" {...register("address")} />
           {errors.address && (
-            <label className="label label-text text-red-400">
+            <span className="text-sm text-red-400">
               {errors.address.message}
-            </label>
+            </span>
           )}
         </div>
-        <div className="form-control w-full max-w-md">
-          <label className="label label-text justify-start">
+        <div className="w-full max-w-md flex flex-col gap-2">
+          <Label className="ml-2">
             <span>City</span>
             <span className="text-red-400">&#65121;</span>
-          </label>
-          <input
-            {...register("city")}
-            type="text"
-            className="input input-bordered input-sm"
-          />
+          </Label>
+          <Input {...register("city")} />
           {errors.city && (
-            <label className="label label-text text-red-400">
-              {errors.city.message}
-            </label>
+            <span className="text-sm text-red-400">{errors.city.message}</span>
           )}
         </div>
-        <div className="form-control w-full max-w-md">
-          <label className="label label-text justify-start">
+        <div className="w-full max-w-md flex flex-col gap-2">
+          <Label className="ml-2">
             <span>Postal Code</span>
             <span className="text-red-400">&#65121;</span>
-          </label>
-          <input
-            {...register("zipcode")}
-            type="text"
-            className="input input-bordered input-sm"
-          />
+          </Label>
+          <Input {...register("zipcode")} />
           {errors.zipcode && (
-            <label className="label label-text text-red-400">
+            <span className="text-sm text-red-400">
               {errors.zipcode.message}
-            </label>
+            </span>
           )}
         </div>
-        <div className="form-control w-full max-w-md">
-          <label className="label label-text justify-start">
+        <div className="w-full max-w-md flex flex-col gap-2">
+          <Label className="ml-2">
             <span>Country</span>
             <span className="text-red-400">&#65121;</span>
-          </label>
-          <input
-            {...register("country")}
-            type="text"
-            className="input input-bordered input-sm"
-          />
+          </Label>
+          <Input {...register("country")} />
           {errors.country && (
-            <label className="label label-text text-red-400">
+            <span className="text-sm text-red-400">
               {errors.country.message}
-            </label>
+            </span>
           )}
         </div>
-        <div className="flex gap-4">
-          <button className="btn btn-primary mt-6 max-w-max" type="submit">
-            Continue
-          </button>
-          <button
-            className="btn btn-warning mt-6 max-w-max"
-            onClick={saveAddressHandler}
+        <div className="flex gap-4 my-6">
+          <Button
+            variant="warning"
+            className="max-w-max"
+            onClick={() => saveAddress()}
             type="button"
-            disabled={!isValid}
+            disabled={!isValid || isLoading}
           >
+            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Save Address
-          </button>
+          </Button>
+          <Button variant="primary" className="max-w-max" type="submit">
+            Continue
+          </Button>
         </div>
       </form>
     </div>

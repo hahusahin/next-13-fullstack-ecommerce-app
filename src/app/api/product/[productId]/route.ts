@@ -1,18 +1,20 @@
 import prisma from "@/lib/prismadb";
-import getCurrentUser from "@/app/actions/getCurrentUser";
+import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
+import { authOptions } from "../../auth/[...nextauth]/route";
 
 interface IParams {
   productId?: string;
 }
 
 export async function POST(request: Request, { params }: { params: IParams }) {
-  const currentUser = await getCurrentUser();
   const { productId } = params;
 
-  if (!currentUser || !productId)
+  const session = await getServerSession(authOptions);
+
+  if (!session || !productId)
     return NextResponse.json(
-      { error: "Something went wrong" },
+      { message: "Not authorized" },
       { status: 500 }
     );
 
@@ -28,17 +30,17 @@ export async function POST(request: Request, { params }: { params: IParams }) {
 
   if (!product)
     return NextResponse.json(
-      { error: "Something went wrong" },
+      { message: "Product Not Found!" },
       { status: 500 }
     );
 
   const hasAlreadyReviewed = !!product.reviews.find(
-    (review) => review.userId === currentUser.id
+    (review) => review.userId === session.user.id
   );
 
   if (hasAlreadyReviewed)
     return NextResponse.json(
-      { error: "You have already reviewed this product" },
+      { message: "You have already reviewed this product" },
       { status: 403 }
     );
 
@@ -58,7 +60,7 @@ export async function POST(request: Request, { params }: { params: IParams }) {
       rating,
       review,
       productId,
-      userId: currentUser.id,
+      userId: session.user.id,
     },
   });
 

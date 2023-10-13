@@ -1,15 +1,13 @@
-import getCurrentUser from "@/app/actions/getCurrentUser";
 import prisma from "@/lib/prismadb";
+import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
+import { authOptions } from "../auth/[...nextauth]/route";
 
 export async function POST(request: Request) {
-  const currentUser = await getCurrentUser();
+  const session = await getServerSession(authOptions);
 
-  if (!currentUser)
-    return NextResponse.json(
-      { error: "Something went wrong" },
-      { status: 400 }
-    );
+  if (!session)
+    return NextResponse.json({ error: "Unauthenticated" }, { status: 400 });
 
   const data = await request.json();
 
@@ -24,7 +22,7 @@ export async function POST(request: Request) {
 
   const order = await prisma.order.create({
     data: {
-      userId: currentUser.id,
+      userId: session.user.id,
       itemsPrice,
       shippingPrice,
       taxPrice,

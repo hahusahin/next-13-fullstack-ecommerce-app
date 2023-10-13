@@ -162,7 +162,7 @@ const UpdateUserForm = ({ user }: ProfileProps) => {
           </div>
         </CardContent>
         <CardFooter>
-          <Button className="mx-auto" type="submit" disabled={isLoading}>
+          <Button variant="success" className="mx-auto" type="submit" disabled={isLoading}>
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Update
           </Button>

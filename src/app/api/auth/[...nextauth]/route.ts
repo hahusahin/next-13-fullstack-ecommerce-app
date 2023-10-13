@@ -1,13 +1,12 @@
 import prisma from "@/lib/prismadb";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import { AuthOptions } from "next-auth";
+import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import NextAuth from "next-auth/next";
 import bcrypt from "bcrypt";
-import { signJWTAccessToken } from "@/lib/jwt";
 
-export const authOptions: AuthOptions = NextAuth({
+export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
     GoogleProvider({
@@ -40,11 +39,14 @@ export const authOptions: AuthOptions = NextAuth({
         );
         // if not correct
         if (!isPasswordCorrect) throw new Error("Invalid Credentials");
-        // if everything is fine, create access token and return with user
-        const { hashedPassword, ...safeUser } = user;
-        const accessToken = signJWTAccessToken({ userId: user.id });
-        const response = { ...safeUser, accessToken };
-        return response;
+        // if everything is fine return user
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          image: user.image,
+          role: user.role,
+        };
       },
     }),
   ],
@@ -62,11 +64,12 @@ export const authOptions: AuthOptions = NextAuth({
       return { ...user, ...token };
     },
     async session({ session, token }) {
-      session.user = token;
-      return session;
+      return { ...session, user: token };
     },
   },
-  debug: process.env.NODE_ENV === "development",
-});
+  // debug: process.env.NODE_ENV === "development",
+};
 
-export { authOptions as GET, authOptions as POST };
+const handler = NextAuth(authOptions);
+
+export { handler as GET, handler as POST };

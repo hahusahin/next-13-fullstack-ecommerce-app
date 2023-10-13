@@ -1,13 +1,14 @@
-import getCurrentUser from "@/app/actions/getCurrentUser";
 import { CartItem } from "@/hooks/useCartStore";
 import { formatAmountForStripe } from "@/utils/stripeUtils";
+import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
+import { authOptions } from "../auth/[...nextauth]/route";
 
 export async function POST(request: NextRequest) {
-  const currentUser = await getCurrentUser();
+  const nextAuthSession = await getServerSession(authOptions);
 
-  if (!currentUser)
+  if (!nextAuthSession)
     return NextResponse.json(
       { error: "You are not authorized" },
       { status: 401 }

@@ -1,14 +1,17 @@
 "use client";
 
 import useCartStore, { CartItem } from "@/hooks/useCartStore";
+import { Button } from "../ui/button";
+import { IoAddOutline, IoRemoveOutline } from "react-icons/io5";
+import { Input } from "../ui/input";
 
 const ItemQuantity = ({ cartItem }: { cartItem: CartItem }) => {
-  const {  addToCart, removeFromCart } = useCartStore();
+  const { addToCart, removeFromCart } = useCartStore();
 
   const { id, quantity } = cartItem;
 
   const decrementItem = () => {
-    removeFromCart(id)
+    removeFromCart(id);
   };
 
   const incrementItem = () => {
@@ -17,22 +20,24 @@ const ItemQuantity = ({ cartItem }: { cartItem: CartItem }) => {
 
   return (
     <div className="inline-flex text-center items-center">
-      <button
-        className="btn btn-sm btn-square btn-outline text-xl"
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
         disabled={quantity <= 1}
         onClick={decrementItem}
       >
-        &mdash;
-      </button>
-      <input
-        className="text-center w-8 m-2 bg-transparent"
+        <IoRemoveOutline size="18" />
+      </Button>
+      <Input
+        className="text-center w-12 m-2 bg-transparent"
         type="text"
         readOnly
         value={quantity}
       />
-      <button className="btn btn-sm btn-square btn-outline text-xl" onClick={incrementItem}>
-        &#xff0b;
-      </button>
+      <Button type="button" variant="ghost" size="icon" onClick={incrementItem}>
+        <IoAddOutline size="18" />
+      </Button>
     </div>
   );
 };

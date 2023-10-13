@@ -1,13 +1,13 @@
 import prisma from "@/lib/prismadb";
-import getCurrentUser from "../actions/getCurrentUser";
 import Shipping from "@/components/order/Shipping";
 import { redirect } from "next/navigation";
-import { SafeUser } from "@/types";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../api/auth/[...nextauth]/route";
 
-async function getUserAddresses(currentUser: SafeUser) {
+async function getUserAddresses(userId: string) {
   try {
     const addresses = await prisma.shippingAddress.findMany({
-      where: { userId: currentUser?.id },
+      where: { userId },
     });
 
     if (!addresses) return null;
@@ -19,11 +19,11 @@ async function getUserAddresses(currentUser: SafeUser) {
 }
 
 const ShippingPage = async () => {
-  const user = await getCurrentUser();
+  const session = await getServerSession(authOptions);
 
-  if (!user) redirect("/login?callbackUrl=/shipping");
+  if (!session) redirect("/login?callbackUrl=/shipping");
 
-  const addresses = await getUserAddresses(user);
+  const addresses = await getUserAddresses(session.user.id);
 
   if (!addresses) return <div>Not Found</div>;
 

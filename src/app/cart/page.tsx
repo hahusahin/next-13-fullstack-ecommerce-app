@@ -1,6 +1,7 @@
 "use client";
 
 import CartItem from "@/components/cart/CartItem";
+import { Button } from "@/components/ui/button";
 import useCartStore from "@/hooks/useCartStore";
 import useFromStore from "@/hooks/useFromStore";
 import { useRouter } from "next/navigation";
@@ -22,12 +23,13 @@ const Cart = () => {
           <p className="text-xl text-center md:text-end my-4 me-6">
             Total Price: {itemsPrice}
           </p>
-          <button
-            className="btn btn-success mt-6"
+          <Button
+            variant="success"
+            className="mt-6"
             onClick={() => router.push("/shipping")}
           >
-            Proceed To Checkout
-          </button>
+            PROCEED TO CHECKOUT
+          </Button>
         </div>
       ) : (
         <p className="container text-center text-2xl">

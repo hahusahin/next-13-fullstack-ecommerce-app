@@ -11,6 +11,9 @@ import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { useToast } from "../ui/use-toast";
+import { Label } from "../ui/label";
+import { Input } from "../ui/input";
+import { Textarea } from "../ui/textarea";
 
 const registerSchema = yup.object({
   id: yup.string(),
@@ -33,7 +36,7 @@ const UpdateAddressForm = ({ user }: ProfileProps) => {
     register,
     handleSubmit,
     reset,
-    formState: { errors, isValid },
+    formState: { errors },
   } = useForm<ShippingFormData>({
     resolver: yupResolver(registerSchema),
   });
@@ -72,7 +75,7 @@ const UpdateAddressForm = ({ user }: ProfileProps) => {
               <Button
                 key={address.id}
                 type="button"
-                variant="outline"
+                variant="outline-dark"
                 onClick={() => {
                   setShowForm(true);
                   reset({
@@ -90,7 +93,7 @@ const UpdateAddressForm = ({ user }: ProfileProps) => {
             ))}
             <Button
               type="button"
-              variant="outline"
+              variant="outline-dark"
               size="icon"
               onClick={() => {
                 setShowForm(true);
@@ -108,84 +111,68 @@ const UpdateAddressForm = ({ user }: ProfileProps) => {
             </Button>
           </div>
           {showForm && (
-            <div className="max-w-[40rem] flex flex-col">
-              <div className="form-control w-full max-w-md">
-                <label className="label label-text justify-start">
+            <div className="max-w-[40rem] flex flex-col gap-4">
+              <div className="w-full max-w-md flex flex-col gap-2">
+                <Label className="ml-2">
                   <span>Label</span>
                   <span className="text-red-400">&#65121;</span>
-                </label>
-                <input
-                  {...register("name")}
-                  type="text"
-                  className="input input-bordered input-sm"
-                />
+                </Label>
+                <Input {...register("name")} type="text" />
                 {errors.name && (
-                  <label className="label label-text text-red-400">
+                  <span className="text-sm text-red-400">
                     {errors.name.message}
-                  </label>
+                  </span>
                 )}
               </div>
-              <div className="form-control w-full max-w-md">
-                <label className="label label-text justify-start">
+              <div className="w-full max-w-md flex flex-col gap-2">
+                <Label className="ml-2">
                   <span>Address</span>
                   <span className="text-red-400">&#65121;</span>
-                </label>
-                <textarea
+                </Label>
+                <Textarea
+                  className="min-w-[400px] h-20"
                   {...register("address")}
-                  className="textarea textarea-bordered min-w-[400px] h-20"
-                ></textarea>
+                />
                 {errors.address && (
-                  <label className="label label-text text-red-400">
+                  <span className="text-sm text-red-400">
                     {errors.address.message}
-                  </label>
+                  </span>
                 )}
               </div>
-              <div className="form-control w-full max-w-md">
-                <label className="label label-text justify-start">
+              <div className="w-full max-w-md flex flex-col gap-2">
+                <Label className="ml-2">
                   <span>City</span>
                   <span className="text-red-400">&#65121;</span>
-                </label>
-                <input
-                  {...register("city")}
-                  type="text"
-                  className="input input-bordered input-sm"
-                />
+                </Label>
+                <Input {...register("city")} />
                 {errors.city && (
-                  <label className="label label-text text-red-400">
+                  <span className="text-sm text-red-400">
                     {errors.city.message}
-                  </label>
+                  </span>
                 )}
               </div>
-              <div className="form-control w-full max-w-md">
-                <label className="label label-text justify-start">
+              <div className="w-full max-w-md flex flex-col gap-2">
+                <Label className="ml-2">
                   <span>Postal Code</span>
                   <span className="text-red-400">&#65121;</span>
-                </label>
-                <input
-                  {...register("zipcode")}
-                  type="text"
-                  className="input input-bordered input-sm"
-                />
+                </Label>
+                <Input {...register("zipcode")} />
                 {errors.zipcode && (
-                  <label className="label label-text text-red-400">
+                  <span className="text-sm text-red-400">
                     {errors.zipcode.message}
-                  </label>
+                  </span>
                 )}
               </div>
-              <div className="form-control w-full max-w-md">
-                <label className="label label-text justify-start">
+              <div className="w-full max-w-md flex flex-col gap-2">
+                <Label className="ml-2">
                   <span>Country</span>
                   <span className="text-red-400">&#65121;</span>
-                </label>
-                <input
-                  {...register("country")}
-                  type="text"
-                  className="input input-bordered input-sm"
-                />
+                </Label>
+                <Input {...register("country")} />
                 {errors.country && (
-                  <label className="label label-text text-red-400">
+                  <span className="text-sm text-red-400">
                     {errors.country.message}
-                  </label>
+                  </span>
                 )}
               </div>
             </div>
@@ -193,7 +180,7 @@ const UpdateAddressForm = ({ user }: ProfileProps) => {
         </CardContent>
         <CardFooter>
           {showForm && (
-            <Button type="submit" className="mx-auto" disabled={isLoading}>
+            <Button variant="success" type="submit" className="mx-auto" disabled={isLoading}>
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Save
             </Button>

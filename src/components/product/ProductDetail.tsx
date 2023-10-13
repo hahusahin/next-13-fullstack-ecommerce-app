@@ -6,6 +6,8 @@ import Image from "next/image";
 import React, { useState } from "react";
 import ReviewForm from "../review/ReviewForm";
 import { useRouter } from "next/navigation";
+import { Button } from "../ui/button";
+import useCartStore from "@/hooks/useCartStore";
 
 interface ProductProps {
   product: Product & {
@@ -16,18 +18,22 @@ interface ProductProps {
 }
 
 const ProductDetail = ({ product }: ProductProps) => {
+  const { addToCart } = useCartStore();
+
   const [showReviewForm, setShowReviewForm] = useState<boolean | undefined>(
     undefined
   );
 
   const router = useRouter();
+
   const { data: session } = useSession();
-  const user = session && session.user;
 
   const closeForm = () => {
     setShowReviewForm(undefined);
     router.refresh();
   };
+
+  const { reviews: _, ...productOnly } = product;
 
   return (
     <>
@@ -56,7 +62,18 @@ const ProductDetail = ({ product }: ProductProps) => {
               <li key={i}>{paragraph}</li>
             ))}
           </ul>
-          <button className="btn btn-info mt-4 max-w-max">Add to Cart</button>
+          <Button
+            variant="primary"
+            className="mt-2 max-w-max"
+            onClick={() =>
+              addToCart({
+                ...productOnly,
+                createdAt: productOnly.createdAt.toISOString(),
+              })
+            }
+          >
+            ADD TO CART
+          </Button>
         </div>
       </div>
 
@@ -89,12 +106,13 @@ const ProductDetail = ({ product }: ProductProps) => {
       )}
       <div className="flex justify-center my-6">
         {showReviewForm === undefined && (
-          <button
-            className="btn btn-success mt-4 max-w-max"
-            onClick={() => setShowReviewForm(user ? true : false)}
+          <Button
+            variant="success"
+            className="mt-4 max-w-max"
+            onClick={() => setShowReviewForm(session ? true : false)}
           >
-            Review Product
-          </button>
+            REVIEW PRODUCT
+          </Button>
         )}
 
         {showReviewForm === true && (
@@ -103,12 +121,15 @@ const ProductDetail = ({ product }: ProductProps) => {
         {showReviewForm === false && (
           <div className="flex flex-col items-center gap-4">
             <p>You should be logged in to make review</p>
-            <button
-              className="btn btn-error mt-4 max-w-max"
-              onClick={() => router.push("/login")}
+            <Button
+              variant="destructive"
+              className="mt-4 max-w-max"
+              onClick={() =>
+                router.push(`/login?callbackUrl=/product/${product.id}`)
+              }
             >
-              Login
-            </button>
+              LOGIN
+            </Button>
           </div>
         )}
       </div>

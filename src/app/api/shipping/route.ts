@@ -1,22 +1,20 @@
-import getCurrentUser from "@/app/actions/getCurrentUser";
 import prisma from "@/lib/prismadb";
+import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
+import { authOptions } from "../auth/[...nextauth]/route";
 
 export async function POST(request: Request) {
-  const currentUser = await getCurrentUser();
+  const session = await getServerSession(authOptions);
 
-  if (!currentUser)
-    return NextResponse.json(
-      { message: "Something went wrong" },
-      { status: 400 }
-    );
+  if (!session)
+    return NextResponse.json({ message: "User Not Found" }, { status: 400 });
 
   const body = await request.json();
 
   const { id, name, address, city, zipcode, country } = body;
 
   const data = {
-    userId: currentUser.id,
+    userId: session.user.id,
     name,
     address,
     city,
@@ -28,5 +26,5 @@ export async function POST(request: Request) {
     ? await prisma.shippingAddress.update({ where: { id }, data })
     : await prisma.shippingAddress.create({ data });
 
-  return NextResponse.json({ newAddress }, { status: 200 });
+  return NextResponse.json(newAddress, { status: 200 });
 }

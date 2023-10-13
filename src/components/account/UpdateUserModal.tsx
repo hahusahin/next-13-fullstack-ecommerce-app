@@ -5,7 +5,6 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import axios from "axios";
 import { ProfileProps } from "./Account";
-import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -63,12 +62,12 @@ const UpdateUserModal = ({ user }: ProfileProps) => {
     axios
       .put(`/api/account/`, data)
       .then(() => {
-        toast.success("Profile Updated Successfully!");
+        // toast.success("Profile Updated Successfully!");
         setOpen(false);
       })
       .catch((err) => {
         console.log(err);
-        toast.error(err?.response?.data?.error || "Something went wrong!");
+        // toast.error(err?.response?.data?.error || "Something went wrong!");
       })
       .finally(() => {
         setIsLoading(false)

@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import { useToast } from "@/components/ui/use-toast";
 
 const registerSchema = yup
@@ -88,10 +88,10 @@ const Register = () => {
 
   return (
     <form
-      className="text-center mx-auto w-full max-w-[40rem]"
+      className="text-center mx-auto w-full max-w-[40rem] p-8 border-2 border-gray-300 rounded-xl shadow-md"
       onSubmit={handleSubmit(onSubmit)}
     >
-      <p className="my-4 text-2xl font-bold">Sign Up</p>
+      <p className="mb-4 text-2xl font-bold">Sign Up</p>
       <p className="my-4 text-xs">
         (You can register with dummy email to see protected pages)
       </p>

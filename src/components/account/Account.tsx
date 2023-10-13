@@ -2,20 +2,12 @@
 
 import { SafeUser } from "@/types";
 import { Order, ShippingAddress } from "@prisma/client";
-import { IoCartOutline, IoCloseOutline, IoHomeOutline } from "react-icons/io5";
-import moment from "moment";
-import Link from "next/link";
-import UpdateUserModal from "./UpdateUserModal";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
+import { IoCartOutline, IoHomeOutline } from "react-icons/io5";
 import { MdAccountCircle } from "react-icons/md";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import UpdateAddressForm from "./UpdateAddressForm";
 import UpdateUserForm from "./UpdateUserForm";
+import OrdersTable from "./OrdersTable";
 
 export interface ProfileProps {
   user: SafeUser & {
@@ -57,45 +49,7 @@ const Account = ({ user }: ProfileProps) => {
           </TabsContent>
           <TabsContent value="orders">
             <p className="text-2xl font-bold mb-4">My Orders</p>
-            <table className="table w-full">
-              <thead>
-                <tr>
-                  <th></th>
-                  <th>Id</th>
-                  <th>Date</th>
-                  <th>Total Price</th>
-                  <th>Delivered</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {user.orders.map((order, i) => (
-                  <tr key={order.id}>
-                    <td>{i + 1}</td>
-                    <td>{order.id}</td>
-                    <td>
-                      {moment(order.createdAt).format("DD-MM-YYYY, HH-mm A")}
-                    </td>
-                    <td>{order.totalPrice}</td>
-                    <td>
-                      {order.isDelivered ? (
-                        moment(order.deliveredAt).format("DD-MM-YYYY, HH-mm A")
-                      ) : (
-                        <IoCloseOutline size={20} color="red" />
-                      )}
-                    </td>
-                    <td>
-                      <Link
-                        className="btn btn-sm btn-info"
-                        href={`/order/${order.id}`}
-                      >
-                        Details
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <OrdersTable orders={user.orders} />
           </TabsContent>
         </div>
       </Tabs>
