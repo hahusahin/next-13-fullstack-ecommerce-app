@@ -13,6 +13,7 @@ export interface ProfileProps {
   user: SafeUser & {
     orders: Order[];
     addresses: ShippingAddress[];
+    isSocialLogin: boolean;
   };
 }
 

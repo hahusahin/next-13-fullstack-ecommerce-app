@@ -91,8 +91,12 @@ const Header: FC = () => {
               <DropdownMenuItem>
                 <Link href={`/admin/products`}>Products</Link>
               </DropdownMenuItem>
-              <DropdownMenuItem>Orders</DropdownMenuItem>
-              <DropdownMenuItem>Users</DropdownMenuItem>
+              <DropdownMenuItem>
+                <Link href={`/admin/orders`}>Orders</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Link href={`/admin/users`}>Users</Link>
+              </DropdownMenuItem>
               <DropdownMenuItem>
                 <Button
                   variant="ghost"

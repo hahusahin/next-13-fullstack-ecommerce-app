@@ -1,6 +1,6 @@
 import prisma from "@/lib/prismadb";
 import AllProducts from "@/components/admin/AllProducts";
-import { redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
@@ -20,8 +20,7 @@ async function getProducts() {
 const AdminProductsPage = async () => {
   const session = await getServerSession(authOptions);
 
-  if (!session || !session.user || session.user.role !== "ADMIN")
-    redirect("/");
+  if (!session || !session.user || session.user.role !== "ADMIN") notFound();
 
   const products = await getProducts();
 

@@ -14,16 +14,16 @@ export async function PUT(request: Request) {
 
   const { name, email, password, country, city } = body;
 
-  const hashedPassword = await bcrypt.hash(password, 12);
+  const hashedPassword = password ? await bcrypt.hash(password, 12) : null;
 
   const user = await prisma.user.update({
     where: { id: session.user.id },
     data: {
       name,
       email,
-      hashedPassword,
       country,
       city,
+      ...(hashedPassword && { hashedPassword }),
     },
   });
 

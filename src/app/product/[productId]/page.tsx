@@ -1,5 +1,6 @@
 import ProductDetail from "@/components/product/ProductDetail";
 import prisma from "@/lib/prismadb";
+import { notFound } from "next/navigation";
 
 interface IParams {
   productId?: string;
@@ -40,7 +41,7 @@ export const generateMetadata = async ({ params }: { params: IParams }) => {
 const ProductPage = async ({ params }: { params: IParams }) => {
   const product = await getProductById(params);
 
-  if (!product) return <div>Not Found</div>;
+  if (!product) return notFound();
 
   return <ProductDetail product={product} />;
 };

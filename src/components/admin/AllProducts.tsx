@@ -6,8 +6,15 @@ import { Button } from "../ui/button";
 import { IoPencilOutline, IoTrashBinOutline } from "react-icons/io5";
 import { DataTable } from "../DataTable";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
+import { useToast } from "../ui/use-toast";
+import ConfirmDialog from "../ConfirmDialog";
+import { Loader2 } from "lucide-react";
 
 interface ProductTableItem {
+  id: string;
   imageUrl: string;
   name: string;
   price: number;
@@ -17,6 +24,24 @@ interface ProductTableItem {
 }
 
 const AllProducts = ({ products }: { products: SafeProduct[] }) => {
+  const router = useRouter();
+  const { toast } = useToast();
+
+  const { mutate: deleteProduct, isLoading } = useMutation({
+    mutationFn: async (productId: string) =>
+      await axios.delete(`/api/admin/product/${productId}`),
+    onSuccess: () => {
+      toast({ title: "Product Deleted Successfully!" });
+      router.refresh();
+    },
+    onError: (error: any) => {
+      toast({
+        variant: "destructive",
+        title: error.response?.data?.message || "Something went wrong!",
+      });
+    },
+  });
+
   const columns: ColumnDef<ProductTableItem>[] = [
     {
       accessorKey: "imageUrl",
@@ -55,14 +80,26 @@ const AllProducts = ({ products }: { products: SafeProduct[] }) => {
     {
       accessorKey: "id",
       header: "",
-      cell: () => (
+      cell: (row) => (
         <div className="flex gap-4">
-          <Button type="button" variant="ghost" size="icon">
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={() => router.push(`/admin/product/${row.getValue()}`)}
+          >
             <IoPencilOutline size="18" />
           </Button>
-          <Button type="button" variant="ghost" size="icon">
-            <IoTrashBinOutline size="18" />
-          </Button>
+          <ConfirmDialog
+            trigger={
+              <Button type="button" variant="ghost" size="icon">
+                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                <IoTrashBinOutline size="18" />
+              </Button>
+            }
+            name={row.row.original.name}
+            onDelete={() => deleteProduct(row.getValue() as string)}
+          />
         </div>
       ),
     },
@@ -70,7 +107,16 @@ const AllProducts = ({ products }: { products: SafeProduct[] }) => {
 
   return (
     <div className="container mx-auto py-6">
-      <p className="text-3xl font-bold mb-6">All Products</p>
+      <div className="flex justify-between">
+        <p className="text-3xl font-bold mb-6">All Products</p>
+        <Button
+          variant="outline-primary"
+          onClick={() => router.push("/admin/addproduct")}
+        >
+          Add Product
+        </Button>
+      </div>
+
       <DataTable columns={columns} data={products} />
     </div>
   );

@@ -5,6 +5,7 @@ const nextConfig = {
       "m.media-amazon.com",
       "cdn.pixabay.com",
       "lh3.googleusercontent.com",
+      "res.cloudinary.com"
     ],
   },
 };

@@ -18,7 +18,7 @@ const buttonVariants = cva(
         success:
           "bg-emerald-600 text-slate-50 hover:bg-emerald-600/90 dark:bg-emerald-800 dark:text-slate-50 dark:hover:bg-emerald-800/90",
         warning:
-          "bg-yellow-500 text-slate-50 hover:bg-yellow-500/90 dark:bg-yellow-700 dark:text-slate-50 dark:hover:bg-yellow-700/90",
+          "bg-yellow-600 text-slate-50 hover:bg-yellow-600/90 dark:bg-yellow-800 dark:text-slate-50 dark:hover:bg-yellow-800/90",
         outline:
           "border border-slate-200 bg-white hover:bg-slate-100 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:hover:bg-slate-800 dark:hover:text-slate-50",
         ["outline-primary"]:

@@ -1,5 +1,6 @@
 import OrderDetails from "@/components/order/OrderDetails";
 import prisma from "@/lib/prismadb";
+import { notFound } from "next/navigation";
 
 interface IParams {
   orderId?: string;
@@ -28,7 +29,7 @@ async function getOrderById(params: IParams) {
 const OrderDetailsPage = async ({ params }: { params: IParams }) => {
   const order = await getOrderById(params);
 
-  if (!order) return <div>Order Not Found</div>;
+  if (!order) return notFound();
 
   return <OrderDetails order={order} />;
 };

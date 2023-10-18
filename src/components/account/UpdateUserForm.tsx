@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { ProfileProps } from "./Account";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
@@ -13,25 +13,14 @@ import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import { useToast } from "../ui/use-toast";
 
-const registerSchema = yup
-  .object({
-    name: yup.string().required("Name is a must"),
-    email: yup.string().email().required("Email is a must"),
-    password: yup
-      .string()
-      .min(6, "Password must have at least 6 characters")
-      .required("Please enter a password"),
-    confirmPassword: yup
-      .string()
-      .test("passwords-match", "Passwords must match", function (value) {
-        return this.parent.password === value;
-      }),
-    country: yup.string(),
-    city: yup.string(),
-  })
-  .required();
-
-type FormData = yup.InferType<typeof registerSchema>;
+type FormData = {
+  name: string;
+  email: string;
+  password?: string;
+  confirmPassword?: string;
+  country?: string;
+  city?: string;
+};
 
 const UpdateUserForm = ({ user }: ProfileProps) => {
   const router = useRouter();
@@ -42,7 +31,31 @@ const UpdateUserForm = ({ user }: ProfileProps) => {
     handleSubmit,
     formState: { errors },
   } = useForm<FormData>({
-    resolver: yupResolver(registerSchema),
+    resolver: yupResolver(
+      yup.object({
+        name: yup.string().required("Name is a must"),
+        email: yup.string().email().required("Email is a must"),
+        password: user.isSocialLogin
+          ? yup.string()
+          : yup
+              .string()
+              .min(6, "Password must have at least 6 characters")
+              .required("Please enter a password"),
+        confirmPassword: user.isSocialLogin
+          ? yup.string()
+          : yup
+              .string()
+              .test(
+                "passwords-match",
+                "Passwords must match",
+                function (value) {
+                  return this.parent.password === value;
+                }
+              ),
+        country: yup.string(),
+        city: yup.string(),
+      })
+    ),
     defaultValues: {
       name: user.name ?? "",
       email: user.email ?? "",
@@ -105,44 +118,48 @@ const UpdateUserForm = ({ user }: ProfileProps) => {
                 </span>
               )}
             </div>
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center gap-4">
-                <Label className="w-1/4" htmlFor="password">
-                  <span>Password</span>
-                  <span className="text-red-400">&#65121;</span>
-                </Label>
-                <Input
-                  type="password"
-                  autoComplete="new-password"
-                  className="w-3/4"
-                  {...register("password")}
-                />
-              </div>
-              {errors.password && (
-                <span className="text-sm text-red-400">
-                  {errors.password.message}
-                </span>
-              )}
-            </div>
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center gap-4">
-                <Label className="w-1/4" htmlFor="password">
-                  <span>Confirm Password</span>
-                  <span className="text-red-400">&#65121;</span>
-                </Label>
-                <Input
-                  type="password"
-                  autoComplete="new-password"
-                  className="w-3/4"
-                  {...register("confirmPassword")}
-                />
-              </div>
-              {errors.confirmPassword && (
-                <span className="text-sm text-red-400">
-                  {errors.confirmPassword.message}
-                </span>
-              )}
-            </div>
+            {!user.isSocialLogin && (
+              <>
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center gap-4">
+                    <Label className="w-1/4" htmlFor="password">
+                      <span>Password</span>
+                      <span className="text-red-400">&#65121;</span>
+                    </Label>
+                    <Input
+                      type="password"
+                      autoComplete="new-password"
+                      className="w-3/4"
+                      {...register("password")}
+                    />
+                  </div>
+                  {errors.password && (
+                    <span className="text-sm text-red-400">
+                      {errors.password.message}
+                    </span>
+                  )}
+                </div>
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center gap-4">
+                    <Label className="w-1/4" htmlFor="password">
+                      <span>Confirm Password</span>
+                      <span className="text-red-400">&#65121;</span>
+                    </Label>
+                    <Input
+                      type="password"
+                      autoComplete="new-password"
+                      className="w-3/4"
+                      {...register("confirmPassword")}
+                    />
+                  </div>
+                  {errors.confirmPassword && (
+                    <span className="text-sm text-red-400">
+                      {errors.confirmPassword.message}
+                    </span>
+                  )}
+                </div>
+              </>
+            )}
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-4">
                 <Label className="w-1/4" htmlFor="country">
@@ -162,7 +179,12 @@ const UpdateUserForm = ({ user }: ProfileProps) => {
           </div>
         </CardContent>
         <CardFooter>
-          <Button variant="success" className="mx-auto" type="submit" disabled={isLoading}>
+          <Button
+            variant="success"
+            className="mx-auto"
+            type="submit"
+            disabled={isLoading}
+          >
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Update
           </Button>

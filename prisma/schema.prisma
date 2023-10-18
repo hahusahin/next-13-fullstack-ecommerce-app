@@ -50,7 +50,7 @@ model Product {
   description  String
   imageUrl     String
   price        Float
-  rating       Float
+  rating       Float       @default(0)
   brand        String
   category     String
   countInStock Int

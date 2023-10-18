@@ -26,6 +26,12 @@ async function getUserAccount() {
 
     if (!user) return null;
 
+    const account = await prisma.account.findFirst({
+      where: {
+        userId: user.id,
+      },
+    });
+
     const { hashedPassword, ...safeUser } = user;
     return {
       ...safeUser,
@@ -35,6 +41,7 @@ async function getUserAccount() {
         ...order,
         date: order.createdAt.toISOString(),
       })),
+      isSocialLogin: !!account,
     };
   } catch (err: any) {
     throw new Error(err);

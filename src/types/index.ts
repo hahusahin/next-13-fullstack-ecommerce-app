@@ -12,6 +12,7 @@ export type SafeProduct = Omit<Product, "createdAt"> & {
   createdAt: string;
 };
 
-// export type SafeOrder = Omit<Order, "createdAt"> & {
-//   createdAt: string;
-// };
+export type SafeOrder = Omit<Order, "createdAt" | "deliveredAt"> & {
+  createdAt: string;
+  deliveredAt?: string;
+};

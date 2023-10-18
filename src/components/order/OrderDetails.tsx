@@ -14,9 +14,16 @@ import {
   IoCheckmarkDoneOutline,
   IoInformationCircleOutline,
 } from "react-icons/io5";
-import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Separator } from "../ui/separator";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import { useToast } from "../ui/use-toast";
+import { Button } from "../ui/button";
+import { Loader2 } from "lucide-react";
+import { useSession } from "next-auth/react";
+import moment from "moment";
 
 interface OrderProps {
   order: Order & {
@@ -39,7 +46,30 @@ const OrderDetails = ({ order }: OrderProps) => {
     taxPrice,
     totalPrice,
     user,
+    isDelivered,
+    deliveredAt,
   } = order;
+
+  const router = useRouter();
+  const { toast } = useToast();
+
+  const { data: session } = useSession();
+  const loggedInUser = session && session.user;
+
+  const { mutate: updateOrder, isLoading } = useMutation({
+    mutationFn: async (data: { isDelivered: boolean; deliveredAt: Date }) =>
+      await axios.put(`/api/order/${id}`, data),
+    onSuccess: () => {
+      toast({ title: "Order Updated Successfully!" });
+      router.refresh();
+    },
+    onError: (error: any) => {
+      toast({
+        variant: "destructive",
+        title: error.response?.data?.message || "Something went wrong!",
+      });
+    },
+  });
 
   return (
     <div className="container mb-auto mt-6">
@@ -62,11 +92,36 @@ const OrderDetails = ({ order }: OrderProps) => {
                 {`${shippingAddress.address}, ${shippingAddress.city}, ${shippingAddress.zipcode}, ${shippingAddress.country}`}
               </p>
               <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2 p-3 bg-amber-400 rounded-xl border w-fit font-medium">
-                  <IoInformationCircleOutline size={20} />
-                  <span>Not Delivered!</span>
-                </div>
-                {/* <Button variant="success">Mark As Delivered</Button> */}
+                {isDelivered && deliveredAt ? (
+                  <div className="flex items-center gap-2 p-3 bg-emerald-400 rounded-xl border w-fit">
+                    <IoCheckmarkDoneOutline size={20} />
+                    <span>Delivered At: {deliveredAt.toLocaleString()}</span>
+                  </div>
+                ) : (
+                  <div className="flex gap-4 items-center">
+                    <div className="flex items-center gap-2 p-3 bg-amber-400 rounded-xl border w-fit font-medium">
+                      <IoInformationCircleOutline size={20} />
+                      <span>Not Delivered!</span>
+                    </div>
+                    {loggedInUser?.role === "ADMIN" && (
+                      <Button
+                        type="button"
+                        variant="success"
+                        onClick={() =>
+                          updateOrder({
+                            isDelivered: true,
+                            deliveredAt: new Date(),
+                          })
+                        }
+                      >
+                        {isLoading && (
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        )}
+                        Mark As Delivered
+                      </Button>
+                    )}
+                  </div>
+                )}
               </div>
             </>
           )}
