@@ -25,6 +25,8 @@ const Header: FC = () => {
   const pathname = usePathname();
   const searchParams = useSearchParams()!;
 
+  console.log(pathname);
+
   const { data: session } = useSession();
 
   const cartQuantity = useFromStore(
@@ -61,13 +63,15 @@ const Header: FC = () => {
         <MdComputer size="32px" />
         <span className="text-lg">E-Shop</span>
       </Link>
-      <div className="flex gap-4">
-        <Input
-          placeholder="Search Product"
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        <Button variant="warning">Search</Button>
-      </div>
+      {["/", "/admin/products"].some((path) => path === pathname) && (
+        <div className="flex gap-4">
+          <Input
+            placeholder="Search Product"
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <Button variant="warning">Search</Button>
+        </div>
+      )}
       <div className="flex items-center gap-2">
         <Link href="/">
           <Button variant="ghost">Home</Button>

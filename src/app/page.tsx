@@ -18,7 +18,7 @@ async function getProducts({
       prisma.product.findMany({
         skip: (page - 1) * limit,
         take: limit,
-        where: { name: { contains: search } },
+        where: { name: { contains: search, mode: "insensitive" } },
       }),
       prisma.product.count(),
     ]);
@@ -56,7 +56,7 @@ export default async function Home({ searchParams }: HomePageProps) {
         md:grid-cols-3 
         lg:grid-cols-4
         2xl:grid-cols-5
-        gap-6
+        gap-4
       "
       >
         {products.map((product) => (
@@ -66,8 +66,8 @@ export default async function Home({ searchParams }: HomePageProps) {
       <PaginationControl
         currentPage={page}
         pageCount={pageCount}
-        previousPage={`/?page=${page - 1}`}
-        nextPage={`/?page=${page + 1}`}
+        previousPage={`?page=${page - 1}`}
+        nextPage={`?page=${page + 1}`}
       />
     </div>
   );

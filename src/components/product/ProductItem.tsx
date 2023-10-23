@@ -11,36 +11,47 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import { Button } from "../ui/button";
+import { TiShoppingCart } from "react-icons/ti";
 
 const ProductItem = ({ data }: { data: SafeProduct }) => {
   const { addToCart } = useCartStore();
 
   return (
     <Card>
-      <CardHeader></CardHeader>
-      <CardContent className="d-flex justify-between items-center text-center">
-        <Link href={`/product/${data.id}`}>
-          <div className="w-full h-[150px] relative">
+      <CardContent className="flex flex-col justify-between gap-4 py-6 h-full">
+        <div className="w-full h-[150px] relative">
+          <Link href={`/product/${data.id}`}>
             <Image
               src={data.imageUrl}
               alt={data.name}
               fill
               style={{ objectFit: "contain" }}
             />
+          </Link>
+        </div>
+        <div className="flex-1">
+          <Link href={`/product/${data.id}`}>
+            <p className="card-title">{data.name}</p>
+          </Link>
+          <div className="text-yellow-600 text-2xl my-1">
+            {[...Array(5)].map((_, index) =>
+              index < data.rating ? (
+                <span key={index}>&#9733;</span>
+              ) : (
+                <span key={index}>&#9734;</span>
+              )
+            )}
           </div>
-          <p className="card-title text-lg my-2">{data.name}</p>
           <p className="text-orange-500 font-semibold">{`$ ${data.price}`}</p>
-        </Link>
-      </CardContent>
-      <CardFooter>
+        </div>
         <Button
-          variant="primary"
-          className="mx-auto"
+          variant="outline-primary"
+          className="w-full"
           onClick={() => addToCart(data)}
         >
           ADD TO CART
         </Button>
-      </CardFooter>
+      </CardContent>
     </Card>
   );
 };
